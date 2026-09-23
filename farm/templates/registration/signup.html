@@ -1,0 +1,14 @@
+{% extends "farm/base.html" %}{% load i18n %}
+{% block title %}{% translate "Crear cuenta" %}{% endblock %}
+{% block content %}
+<div style="max-width:440px;margin-inline:auto">
+  <h1>{% translate "Crear cuenta" %}</h1>
+  <section class="card">
+    <form class="form" method="post">{% csrf_token %}
+      {{ form.as_p }}
+      <button class="btn btn-block" type="submit">{% translate "Crear cuenta" %}</button>
+    </form>
+    <p class="muted" style="font-size:.9rem">{% translate "¿Ya tienes cuenta?" %} <a href="{% url 'login' %}">{% translate "Entrar" %}</a></p>
+  </section>
+</div>
+{% endblock %}

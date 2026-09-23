@@ -1,0 +1,42 @@
+{% extends "farm/base.html" %}{% load i18n farm_extras %}
+{% block title %}{% translate "Metas" %}{% endblock %}
+{% block content %}
+<h1>{% translate "Metas" %}</h1>
+<div class="grid grid-main">
+  <div>
+    {% for g in goals %}
+      <section class="card">
+        <div class="card-head">
+          <h3>{{ g.name }}</h3>
+          {% if g.completed_at %}<span class="chip chip-live">{% translate "cumplida" %}</span>{% else %}<span class="num muted">{{ g.percent }}%</span>{% endif %}
+        </div>
+        <div class="progress"><div class="progress-fill" style="width:{{ g.percent }}%"></div></div>
+        <p class="muted" style="margin:.4em 0 .8em">
+          <span class="num">{{ g.earned|fnum }} / {{ g.target_flux|fnum }}</span> flux
+          {% if not g.completed_at %}
+            · {% blocktranslate with r=g.remaining|fnum %}faltan {{ r }}{% endblocktranslate %}
+            {% if g.eta_hours is not None %} · {% blocktranslate with h=g.eta_hours|hm %}unas {{ h }} a tu ritmo{% endblocktranslate %}{% endif %}
+          {% endif %}
+        </p>
+        <div class="actions">
+          {% if not g.completed_at %}
+            <form class="inline-form" method="post" action="{% url 'farm:goal_complete' g.pk %}">{% csrf_token %}<button class="btn btn-sm" type="submit">{% translate "Marcar cumplida" %}</button></form>
+          {% endif %}
+          <form class="inline-form" method="post" action="{% url 'farm:goal_delete' g.pk %}">{% csrf_token %}<button class="btn btn-danger btn-sm" type="submit">{% translate "Eliminar" %}</button></form>
+        </div>
+      </section>
+    {% empty %}
+      <section class="card"><p class="empty">{% translate "No tienes metas todavía." %}</p></section>
+    {% endfor %}
+  </div>
+  <section class="card">
+    <h3>{% translate "Nueva meta" %}</h3>
+    <p class="muted" style="font-size:.9rem">{% translate "Solo cuenta el flux que anotes desde que la creas." %}</p>
+    <form class="form" method="post">{% csrf_token %}
+      {{ form.as_p }}
+      <button class="btn" type="submit">{% translate "Crear meta" %}</button>
+    </form>
+    {% if pace %}<p class="muted" style="font-size:.85rem">{% blocktranslate with p=pace|fnum %}Tu ritmo de los últimos 30 días: {{ p }} flux/h.{% endblocktranslate %}</p>{% endif %}
+  </section>
+</div>
+{% endblock %}

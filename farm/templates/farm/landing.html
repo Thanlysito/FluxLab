@@ -1,0 +1,43 @@
+{% extends "farm/base.html" %}{% load i18n %}
+{% block title %}{% translate "Tu laboratorio de farmeo" %}{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1>{% blocktranslate %}¿Cuánto flux te da <em>una hora</em> de farmeo?{% endblocktranslate %}</h1>
+  <p>{% translate "Dale a empezar cuando entres a farmear, apunta lo que ganaste al terminar y FluxLab te dice qué actividad rinde más, cuánto te falta para tu meta y cómo vas esta semana." %}</p>
+  <div class="hero-actions">
+    <a class="btn" href="{% url 'signup' %}">{% translate "Crear cuenta gratis" %}</a>
+    <a class="btn btn-ghost" href="{% url 'login' %}">{% translate "Ya tengo cuenta" %}</a>
+  </div>
+</section>
+
+<section class="demo grid grid-main" aria-label="{% translate 'Ejemplo' %}">
+  <div class="card timer-card running">
+    <div class="timer-label">{% translate "Delves · en marcha" %}</div>
+    <div class="timer-digits">1:12:48</div>
+    <div class="timer-actions"><span class="btn btn-live" aria-hidden="true">{% translate "Terminar y anotar" %}</span></div>
+  </div>
+  <div class="card">
+    <div class="card-head"><h3>{% translate "Flux por hora" %}</h3><span class="chip">{% translate "ejemplo" %}</span></div>
+    <div class="bars">
+      <div class="bar-row"><span>Delves</span><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><span class="num">48.200</span></div>
+      <div class="bar-row"><span>Geode</span><div class="bar-track"><div class="bar-fill" style="width:71%"></div></div><span class="num">34.100</span></div>
+      <div class="bar-row"><span>{% translate "Barcos" %}</span><div class="bar-track"><div class="bar-fill" style="width:52%"></div></div><span class="num">25.000</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="steps">
+  <div class="card step">
+    <h3><span class="step-n">01</span>{% translate "Cronometra" %}</h3>
+    <p class="muted">{% translate "Un botón al entrar, otro al salir. Si se te olvidó, la anotas a mano." %}</p>
+  </div>
+  <div class="card step">
+    <h3><span class="step-n">02</span>{% translate "Anota en 20 segundos" %}</h3>
+    <p class="muted">{% translate "Flux ganado, actividad y listo. Recordamos tu clase y tu Power Rank." %}</p>
+  </div>
+  <div class="card step">
+    <h3><span class="step-n">03</span>{% translate "Farmea mejor" %}</h3>
+    <p class="muted">{% translate "Ve qué te rinde más y cuántas horas te faltan para esa montura o ese mag." %}</p>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "farm/base.html" %}{% load i18n farm_extras %}
+{% block title %}{% translate "Estadísticas" %}{% endblock %}
+{% block content %}
+<h1>{% translate "Estadísticas" %}</h1>
+<nav class="tabs" aria-label="{% translate 'Periodo' %}">
+  <a href="?period=7" {% if period == "7" %}class="active"{% endif %}>{% translate "7 días" %}</a>
+  <a href="?period=30" {% if period == "30" %}class="active"{% endif %}>{% translate "30 días" %}</a>
+  <a href="?period=all" {% if period == "all" %}class="active"{% endif %}>{% translate "Todo" %}</a>
+</nav>
+
+{% if stats.sessions %}
+<section class="card">
+  <div class="kpis">
+    <div class="kpi"><div class="value flux">{{ stats.flux|fnum }}</div><div class="label">{% translate "flux" %}</div></div>
+    <div class="kpi"><div class="value">{% if stats.rated_hours %}{{ stats.flux_per_hour|fnum }}{% else %}—{% endif %}</div><div class="label">{% translate "flux por hora" %}</div></div>
+    <div class="kpi"><div class="value">{{ stats.hours|hm }}</div><div class="label">{% blocktranslate count n=stats.sessions %}en {{ n }} sesión{% plural %}en {{ n }} sesiones{% endblocktranslate %}</div></div>
+    <div class="kpi"><div class="value">{{ stats.cubits|fnum }}</div><div class="label">{% translate "cubits" %}</div></div>
+  </div>
+</section>
+
+{% if stats.best_activity %}
+<section class="card" style="border-color:var(--flux)">
+  <div class="timer-label">{% translate "Lo que más te rinde" %}</div>
+  <h2 style="margin:.2em 0">{{ stats.best_activity.activity.display_name|default:_("Sin actividad") }}</h2>
+  <p class="muted" style="margin:0">{% blocktranslate with fph=stats.best_activity.flux_per_hour|fnum %}{{ fph }} flux por hora de media.{% endblocktranslate %}</p>
+</section>
+{% endif %}
+
+<section class="card">
+  <div class="card-head"><h3>{% translate "Flux por hora según actividad" %}</h3></div>
+  {% with top=stats.by_activity.0.flux_per_hour %}
+  <div class="bars">
+    {% for a in stats.by_activity %}
+      <div class="bar-row">
+        <span>{{ a.activity.display_name|default:_("Sin actividad") }}</span>
+        <div class="bar-track"><div class="bar-fill" style="width:{{ a.flux_per_hour|pct:top }}%"></div></div>
+        <span class="num">{{ a.flux_per_hour|fnum }}/h · {{ a.hours|hm }}</span>
+      </div>
+    {% endfor %}
+  </div>
+  {% endwith %}
+  <p class="muted" style="font-size:.85rem;margin-bottom:0">{% translate "Las actividades con menos de 30 minutos anotados no cuentan para «lo que más te rinde»." %}</p>
+</section>
+{% else %}
+<section class="card">
+  <p class="empty">{% translate "No hay sesiones anotadas en este periodo." %}</p>
+  <a class="btn" href="{% url 'farm:home' %}">{% translate "Empezar a farmear" %}</a>
+</section>
+{% endif %}
+{% endblock %}

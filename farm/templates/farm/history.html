@@ -1,0 +1,45 @@
+{% extends "farm/base.html" %}{% load i18n farm_extras %}
+{% block title %}{% translate "Historial" %}{% endblock %}
+{% block content %}
+<div class="card-head">
+  <h1>{% translate "Historial" %}</h1>
+  <a class="btn btn-ghost btn-sm" href="{% url 'farm:session_new' %}">+ {% translate "Anotar sesión" %}</a>
+</div>
+<section class="card">
+  {% if page_obj %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th>{% translate "Fecha" %}</th><th>{% translate "Actividad" %}</th><th>{% translate "Duración" %}</th>
+        <th class="num">{% translate "Flux" %}</th><th class="num">{% translate "Flux/h" %}</th><th></th>
+      </tr></thead>
+      <tbody>
+      {% for s in page_obj %}
+        <tr>
+          <td>{{ s.started_at|date:"j M, H:i" }}</td>
+          <td>{{ s.activity.display_name|default:"—" }}{% if s.trove_class %} <span class="dim">· {{ s.get_trove_class_display }}</span>{% endif %}</td>
+          <td>{{ s.duration|duration }}</td>
+          {% if s.is_logged %}
+            <td class="num">{{ s.flux|fnum }}</td><td class="num">{% if s.is_rated %}{{ s.flux_per_hour|fnum }}{% else %}<span class="dim" title="{% translate 'Menos de 5 minutos: no cuenta para el flux/h' %}">—</span>{% endif %}</td>
+            <td><a class="muted" href="{% url 'farm:session_log' s.pk %}">{% translate "Editar" %}</a></td>
+          {% else %}
+            <td colspan="2"><span class="chip chip-warn">{% translate "sin anotar" %}</span></td>
+            <td><a class="btn btn-sm" href="{% url 'farm:session_log' s.pk %}">{% translate "Anotar" %}</a></td>
+          {% endif %}
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if page_obj.has_other_pages %}
+    <div class="tabs" style="margin:16px 0 0">
+      {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}">← {% translate "Anteriores" %}</a>{% endif %}
+      <span class="muted" style="padding:6px">{% blocktranslate with n=page_obj.number total=page_obj.paginator.num_pages %}Página {{ n }} de {{ total }}{% endblocktranslate %}</span>
+      {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}">{% translate "Siguientes" %} →</a>{% endif %}
+    </div>
+  {% endif %}
+  {% else %}
+    <p class="empty">{% translate "Aún no hay sesiones. Dale a «Empezar» en el inicio la próxima vez que farmees." %}</p>
+  {% endif %}
+</section>
+{% endblock %}

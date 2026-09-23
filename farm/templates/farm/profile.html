@@ -1,0 +1,15 @@
+{% extends "farm/base.html" %}{% load i18n %}
+{% block title %}{% translate "Perfil" %}{% endblock %}
+{% block content %}
+<div style="max-width:520px">
+  <h1>{% translate "Perfil" %}</h1>
+  <section class="card">
+    <p class="muted">{% blocktranslate with u=user.username %}Cuenta: {{ u }}{% endblocktranslate %}</p>
+    <form class="form" method="post">{% csrf_token %}
+      {{ form.as_p }}
+      <button class="btn" type="submit">{% translate "Guardar" %}</button>
+    </form>
+  </section>
+  <p><a class="muted" href="{% url 'password_change' %}">{% translate "Cambiar contraseña" %}</a></p>
+</div>
+{% endblock %}

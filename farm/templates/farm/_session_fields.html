@@ -1,0 +1,12 @@
+{% load i18n %}{{ form.non_field_errors }}
+<p>{{ form.activity.label_tag }}{{ form.activity }}{{ form.activity.errors }}</p>
+<div class="form-row">
+  <p>{{ form.flux.label_tag }}<input class="big-input" type="number" name="{{ form.flux.html_name }}" id="{{ form.flux.id_for_label }}" value="{% if form.is_bound or session.is_logged %}{{ form.flux.value|default_if_none:'' }}{% endif %}" placeholder="0" min="0" inputmode="numeric" required{% if autofocus_flux %} autofocus{% endif %}>{{ form.flux.errors }}</p>
+  <p>{{ form.cubits.label_tag }}{% if form.is_bound or session.is_logged %}{{ form.cubits }}{% else %}<input type="number" name="{{ form.cubits.html_name }}" id="{{ form.cubits.id_for_label }}" min="0" inputmode="numeric" placeholder="0">{% endif %}{{ form.cubits.errors }}</p>
+</div>
+<div class="form-row">
+  <p>{{ form.trove_class.label_tag }}{{ form.trove_class }}{{ form.trove_class.errors }}</p>
+  <p>{{ form.power_rank.label_tag }}{{ form.power_rank }}{{ form.power_rank.errors }}</p>
+</div>
+<p>{{ form.notes.label_tag }}{{ form.notes }}{{ form.notes.errors }}</p>
+<p><label class="check">{{ form.share_with_community }} {{ form.share_with_community.label }}</label></p>

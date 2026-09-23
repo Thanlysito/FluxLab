@@ -1,0 +1,18 @@
+{% extends "farm/base.html" %}{% load i18n %}
+{% block title %}{% translate "Anotar sesión" %}{% endblock %}
+{% block content %}
+<div style="max-width:620px">
+  <section class="card">
+    <div class="card-head"><h2>{% translate "Anotar una sesión" %}</h2></div>
+    <p class="muted">{% translate "Para cuando farmeaste sin el cronómetro." %}</p>
+    <form class="form" method="post">{% csrf_token %}
+      <div class="form-row">
+        <p>{{ form.started_at.label_tag }}{{ form.started_at }}{{ form.started_at.errors }}</p>
+        <p>{{ form.minutes.label_tag }}{{ form.minutes }}{{ form.minutes.errors }}</p>
+      </div>
+      {% include "farm/_session_fields.html" %}
+      <div class="timer-actions"><button class="btn" type="submit">{% translate "Guardar" %}</button></div>
+    </form>
+  </section>
+</div>
+{% endblock %}

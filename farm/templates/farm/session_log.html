@@ -1,0 +1,24 @@
+{% extends "farm/base.html" %}{% load i18n farm_extras %}
+{% block title %}{% translate "Anotar sesión" %}{% endblock %}
+{% block content %}
+<div style="max-width:620px">
+  <section class="card">
+    <div class="card-head">
+      <h2>{% if session.is_logged %}{% translate "Corregir sesión" %}{% else %}{% translate "¿Cuánto sacaste?" %}{% endif %}</h2>
+      <span class="chip chip-live">{{ session.duration|duration }}</span>
+    </div>
+    <p class="muted">{{ session.started_at|date:"l j F, H:i" }} – {{ session.ended_at|date:"H:i" }}</p>
+    {% if not session.is_rated %}
+      <p class="chip chip-warn" style="display:block;border-radius:var(--radius);padding:8px 12px">{% blocktranslate with m=min_rated %}Duró menos de {{ m }} minutos: se guarda el flux, pero no cuenta para el flux por hora.{% endblocktranslate %}</p>
+    {% endif %}
+    <form class="form" method="post">{% csrf_token %}
+      {% include "farm/_session_fields.html" with autofocus_flux=True %}
+      <div class="timer-actions"><button class="btn" type="submit">{% translate "Guardar" %}</button></div>
+    </form>
+  </section>
+  <form method="post" action="{% url 'farm:session_delete' session.pk %}" style="margin-top:14px">{% csrf_token %}
+    <input type="hidden" name="next" value="{% url 'farm:home' %}">
+    <button class="btn btn-danger btn-sm" type="submit">{% translate "Descartar esta sesión" %}</button>
+  </form>
+</div>
+{% endblock %}

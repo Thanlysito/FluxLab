@@ -1,0 +1,15 @@
+{% extends "farm/base.html" %}{% load i18n %}
+{% block title %}{% translate "Entrar" %}{% endblock %}
+{% block content %}
+<div style="max-width:440px;margin-inline:auto">
+  <h1>{% translate "Entrar" %}</h1>
+  <section class="card">
+    <form class="form" method="post">{% csrf_token %}
+      {{ form.as_p }}
+      <input type="hidden" name="next" value="{{ next }}">
+      <button class="btn btn-block" type="submit">{% translate "Entrar" %}</button>
+    </form>
+    <p class="muted" style="font-size:.9rem"><a href="{% url 'password_reset' %}">{% translate "¿Olvidaste tu contraseña?" %}</a> · <a href="{% url 'signup' %}">{% translate "Crear cuenta" %}</a></p>
+  </section>
+</div>
+{% endblock %}

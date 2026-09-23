@@ -1,0 +1,710 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-23 17:31-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: farm/forms.py:21
+msgid "Correo"
+msgstr "Email"
+
+#: farm/forms.py:22
+msgid "Solo para recuperar tu contraseña."
+msgstr "Only used to recover your password."
+
+#: farm/forms.py:38 farm/templates/farm/history.html:13
+msgid "Actividad"
+msgstr "Activity"
+
+#: farm/forms.py:39
+msgid "Elige la actividad"
+msgstr "Pick the activity"
+
+#: farm/forms.py:46
+msgid "Flux ganado"
+msgstr "Flux earned"
+
+#: farm/forms.py:47
+msgid "Cubits ganados"
+msgstr "Cubits earned"
+
+#: farm/forms.py:48
+msgid "Clase"
+msgstr "Class"
+
+#: farm/forms.py:49 farm/models.py:70
+msgid "Power Rank"
+msgstr "Power Rank"
+
+#: farm/forms.py:50
+msgid "Notas"
+msgstr "Notes"
+
+#: farm/forms.py:51
+msgid "Contar en las estadísticas de la comunidad (anónimo)"
+msgstr "Include in community stats (anonymous)"
+
+#: farm/forms.py:74
+msgid "¿Cuándo empezaste?"
+msgstr "When did you start?"
+
+#: farm/forms.py:78
+msgid "Duración (minutos)"
+msgstr "Duration (minutes)"
+
+#: farm/forms.py:86
+msgid "La fecha no puede estar en el futuro."
+msgstr "The date can't be in the future."
+
+#: farm/forms.py:102
+msgid "¿Para qué estás ahorrando?"
+msgstr "What are you saving for?"
+
+#: farm/forms.py:102
+msgid "Flux que necesitas"
+msgstr "Flux you need"
+
+#: farm/forms.py:104
+msgid "Ej: Dragón nuevo, gemas, montura..."
+msgstr "E.g. new dragon, gems, mount..."
+
+#: farm/models.py:26
+msgid "nombre"
+msgstr "name"
+
+#: farm/models.py:27
+msgid "nombre en inglés"
+msgstr "English name"
+
+#: farm/models.py:28
+msgid "orden"
+msgstr "order"
+
+#: farm/models.py:29
+msgid "activa"
+msgstr "active"
+
+#: farm/models.py:33 farm/models.py:67
+msgid "actividad"
+msgstr "activity"
+
+#: farm/models.py:34
+msgid "actividades"
+msgstr "activities"
+
+#: farm/models.py:46
+msgid "nombre en Trove"
+msgstr "Trove name"
+
+#: farm/models.py:47
+msgid "clase principal"
+msgstr "main class"
+
+#: farm/models.py:69
+msgid "clase"
+msgstr "class"
+
+#: farm/models.py:71
+msgid "inicio"
+msgstr "start"
+
+#: farm/models.py:72
+msgid "fin"
+msgstr "end"
+
+#: farm/models.py:73
+msgid "flux ganado"
+msgstr "flux earned"
+
+#: farm/models.py:74
+msgid "cubits ganados"
+msgstr "cubits earned"
+
+#: farm/models.py:75
+msgid "notas"
+msgstr "notes"
+
+#: farm/models.py:77
+msgid "contar en las estadísticas de la comunidad"
+msgstr "include in community stats"
+
+#: farm/models.py:125
+msgid "meta"
+msgstr "goal"
+
+#: farm/models.py:126
+msgid "flux objetivo"
+msgstr "target flux"
+
+#: farm/templates/farm/base.html:7
+msgid ""
+"Cronometra tus sesiones de farmeo en Trove y descubre qué te da más flux por"
+" hora."
+msgstr ""
+"Time your Trove farming sessions and find out what earns you the most flux "
+"per hour."
+
+#: farm/templates/farm/base.html:20
+msgid "Cronómetro en marcha"
+msgstr "Timer running"
+
+#: farm/templates/farm/base.html:25
+msgid "Principal"
+msgstr "Main"
+
+#: farm/templates/farm/base.html:27 farm/templates/farm/home.html:2
+msgid "Inicio"
+msgstr "Home"
+
+#: farm/templates/farm/base.html:28 farm/templates/farm/history.html:2
+#: farm/templates/farm/history.html:5 farm/templates/farm/home.html:89
+msgid "Historial"
+msgstr "History"
+
+#: farm/templates/farm/base.html:29 farm/templates/farm/stats.html:2
+#: farm/templates/farm/stats.html:4
+msgid "Estadísticas"
+msgstr "Stats"
+
+#: farm/templates/farm/base.html:30 farm/templates/farm/goals.html:2
+#: farm/templates/farm/goals.html:4 farm/templates/farm/home.html:72
+msgid "Metas"
+msgstr "Goals"
+
+#: farm/templates/farm/base.html:31 farm/templates/farm/profile.html:2
+#: farm/templates/farm/profile.html:5
+msgid "Perfil"
+msgstr "Profile"
+
+#: farm/templates/farm/base.html:33
+msgid "Salir"
+msgstr "Log out"
+
+#: farm/templates/farm/base.html:36 farm/templates/registration/login.html:2
+#: farm/templates/registration/login.html:5
+#: farm/templates/registration/login.html:10
+#: farm/templates/registration/password_reset_complete.html:8
+#: farm/templates/registration/signup.html:11
+msgid "Entrar"
+msgstr "Log in"
+
+#: farm/templates/farm/base.html:37 farm/templates/registration/login.html:12
+#: farm/templates/registration/signup.html:2
+#: farm/templates/registration/signup.html:5
+#: farm/templates/registration/signup.html:9
+msgid "Crear cuenta"
+msgstr "Sign up"
+
+#: farm/templates/farm/base.html:58
+msgid ""
+"FluxLab es un proyecto de fans. No está afiliado con Gamigo ni Trion Worlds."
+" Trove es marca de sus dueños."
+msgstr ""
+"FluxLab is a fan project. It is not affiliated with Gamigo or Trion Worlds. "
+"Trove is a trademark of its owners."
+
+#: farm/templates/farm/goals.html:11
+msgid "cumplida"
+msgstr "done"
+
+#: farm/templates/farm/goals.html:17
+#, python-format
+msgid "faltan %(r)s"
+msgstr "%(r)s to go"
+
+#: farm/templates/farm/goals.html:18 farm/templates/farm/home.html:79
+#, python-format
+msgid "unas %(h)s a tu ritmo"
+msgstr "about %(h)s at your pace"
+
+#: farm/templates/farm/goals.html:23
+msgid "Marcar cumplida"
+msgstr "Mark as done"
+
+#: farm/templates/farm/goals.html:25
+msgid "Eliminar"
+msgstr "Delete"
+
+#: farm/templates/farm/goals.html:29
+msgid "No tienes metas todavía."
+msgstr "You don't have any goals yet."
+
+#: farm/templates/farm/goals.html:33
+msgid "Nueva meta"
+msgstr "New goal"
+
+#: farm/templates/farm/goals.html:34
+msgid "Solo cuenta el flux que anotes desde que la creas."
+msgstr "Only flux you log after creating it counts."
+
+#: farm/templates/farm/goals.html:37 farm/templates/farm/home.html:84
+msgid "Crear meta"
+msgstr "Create goal"
+
+#: farm/templates/farm/goals.html:39
+#, python-format
+msgid "Tu ritmo de los últimos 30 días: %(p)s flux/h."
+msgstr "Your pace over the last 30 days: %(p)s flux/h."
+
+#: farm/templates/farm/history.html:6 farm/templates/farm/session_log.html:2
+#: farm/templates/farm/session_new.html:2
+msgid "Anotar sesión"
+msgstr "Log session"
+
+#: farm/templates/farm/history.html:13
+msgid "Fecha"
+msgstr "Date"
+
+#: farm/templates/farm/history.html:13
+msgid "Duración"
+msgstr "Duration"
+
+#: farm/templates/farm/history.html:14
+msgid "Flux"
+msgstr "Flux"
+
+#: farm/templates/farm/history.html:14
+msgid "Flux/h"
+msgstr "Flux/h"
+
+#: farm/templates/farm/history.html:23
+msgid "Menos de 5 minutos: no cuenta para el flux/h"
+msgstr "Less than 5 minutes: doesn't count toward flux/h"
+
+#: farm/templates/farm/history.html:24
+msgid "Editar"
+msgstr "Edit"
+
+#: farm/templates/farm/history.html:26
+msgid "sin anotar"
+msgstr "not logged"
+
+#: farm/templates/farm/history.html:27 farm/templates/farm/home.html:41
+msgid "Anotar"
+msgstr "Log"
+
+#: farm/templates/farm/history.html:36
+msgid "Anteriores"
+msgstr "Newer"
+
+#: farm/templates/farm/history.html:37
+#, python-format
+msgid "Página %(n)s de %(total)s"
+msgstr "Page %(n)s of %(total)s"
+
+#: farm/templates/farm/history.html:38
+msgid "Siguientes"
+msgstr "Older"
+
+#: farm/templates/farm/history.html:42
+msgid ""
+"Aún no hay sesiones. Dale a «Empezar» en el inicio la próxima vez que "
+"farmees."
+msgstr "No sessions yet. Hit “Start” on the home page next time you farm."
+
+#: farm/templates/farm/home.html:9
+msgid "en marcha"
+msgstr "running"
+
+#: farm/templates/farm/home.html:13 farm/templates/farm/landing.html:17
+msgid "Terminar y anotar"
+msgstr "Stop and log"
+
+#: farm/templates/farm/home.html:18
+msgid "¿Vas a farmear?"
+msgstr "Going to farm?"
+
+#: farm/templates/farm/home.html:21
+msgid "Actividad (la puedes cambiar al terminar)"
+msgstr "Activity (you can change it when you stop)"
+
+#: farm/templates/farm/home.html:23
+msgid "Todavía no sé"
+msgstr "Not sure yet"
+
+#: farm/templates/farm/home.html:27
+msgid "Empezar"
+msgstr "Start"
+
+#: farm/templates/farm/home.html:28
+msgid "Anotar sin cronómetro"
+msgstr "Log without timer"
+
+#: farm/templates/farm/home.html:36
+msgid "Te falta anotar"
+msgstr "Waiting to be logged"
+
+#: farm/templates/farm/home.html:50
+msgid "Últimos 7 días"
+msgstr "Last 7 days"
+
+#: farm/templates/farm/home.html:51
+msgid "Ver estadísticas"
+msgstr "See stats"
+
+#: farm/templates/farm/home.html:54 farm/templates/farm/stats.html:14
+msgid "flux"
+msgstr "flux"
+
+#: farm/templates/farm/home.html:55
+msgid "farmeando"
+msgstr "farming"
+
+#: farm/templates/farm/home.html:56 farm/templates/farm/stats.html:15
+msgid "flux por hora"
+msgstr "flux per hour"
+
+#: farm/templates/farm/home.html:57
+msgid "días de racha"
+msgstr "day streak"
+
+#: farm/templates/farm/home.html:59
+msgid "Flux por día"
+msgstr "Flux per day"
+
+#: farm/templates/farm/home.html:72
+msgid "Gestionar"
+msgstr "Manage"
+
+#: farm/templates/farm/home.html:83
+msgid ""
+"¿Ahorrando para algo? Crea una meta y te decimos cuántas horas te faltan."
+msgstr ""
+"Saving up for something? Create a goal and we'll tell you how many hours are"
+" left."
+
+#: farm/templates/farm/home.html:89
+msgid "Sesiones recientes"
+msgstr "Recent sessions"
+
+#: farm/templates/farm/home.html:93 farm/templates/farm/stats.html:24
+#: farm/templates/farm/stats.html:35
+msgid "Sin actividad"
+msgstr "No activity"
+
+#: farm/templates/farm/home.html:97
+msgid "Aún no has anotado ninguna sesión."
+msgstr "You haven't logged any sessions yet."
+
+#: farm/templates/farm/landing.html:2
+msgid "Tu laboratorio de farmeo"
+msgstr "Your farming lab"
+
+#: farm/templates/farm/landing.html:5
+msgid "¿Cuánto flux te da <em>una hora</em> de farmeo?"
+msgstr "How much flux does <em>one hour</em> of farming get you?"
+
+#: farm/templates/farm/landing.html:6
+msgid ""
+"Dale a empezar cuando entres a farmear, apunta lo que ganaste al terminar y "
+"FluxLab te dice qué actividad rinde más, cuánto te falta para tu meta y cómo"
+" vas esta semana."
+msgstr ""
+"Hit start when you go farming, jot down what you earned when you're done, "
+"and FluxLab tells you which activity pays best, how far you are from your "
+"goal and how your week is going."
+
+#: farm/templates/farm/landing.html:8
+msgid "Crear cuenta gratis"
+msgstr "Sign up free"
+
+#: farm/templates/farm/landing.html:9
+msgid "Ya tengo cuenta"
+msgstr "I have an account"
+
+#: farm/templates/farm/landing.html:13
+msgid "Ejemplo"
+msgstr "Example"
+
+#: farm/templates/farm/landing.html:15
+msgid "Delves · en marcha"
+msgstr "Delves · running"
+
+#: farm/templates/farm/landing.html:20
+msgid "Flux por hora"
+msgstr "Flux per hour"
+
+#: farm/templates/farm/landing.html:20
+msgid "ejemplo"
+msgstr "example"
+
+#: farm/templates/farm/landing.html:24
+msgid "Barcos"
+msgstr "Ships"
+
+#: farm/templates/farm/landing.html:31
+msgid "Cronometra"
+msgstr "Time it"
+
+#: farm/templates/farm/landing.html:32
+msgid "Un botón al entrar, otro al salir. Si se te olvidó, la anotas a mano."
+msgstr "One click when you start, one when you stop. Forgot? Log it by hand."
+
+#: farm/templates/farm/landing.html:35
+msgid "Anota en 20 segundos"
+msgstr "Log it in 20 seconds"
+
+#: farm/templates/farm/landing.html:36
+msgid "Flux ganado, actividad y listo. Recordamos tu clase y tu Power Rank."
+msgstr "Flux earned, activity, done. We remember your class and Power Rank."
+
+#: farm/templates/farm/landing.html:39
+msgid "Farmea mejor"
+msgstr "Farm smarter"
+
+#: farm/templates/farm/landing.html:40
+msgid ""
+"Ve qué te rinde más y cuántas horas te faltan para esa montura o ese mag."
+msgstr "See what pays best and how many hours until that mount or mag rider."
+
+#: farm/templates/farm/profile.html:7
+#, python-format
+msgid "Cuenta: %(u)s"
+msgstr "Account: %(u)s"
+
+#: farm/templates/farm/profile.html:10 farm/templates/farm/session_log.html:16
+#: farm/templates/farm/session_new.html:14
+#: farm/templates/registration/password_change_form.html:9
+msgid "Guardar"
+msgstr "Save"
+
+#: farm/templates/farm/profile.html:13
+#: farm/templates/registration/password_change_form.html:2
+#: farm/templates/registration/password_change_form.html:5
+msgid "Cambiar contraseña"
+msgstr "Change password"
+
+#: farm/templates/farm/session_log.html:7
+msgid "Corregir sesión"
+msgstr "Edit session"
+
+#: farm/templates/farm/session_log.html:7
+msgid "¿Cuánto sacaste?"
+msgstr "How much did you get?"
+
+#: farm/templates/farm/session_log.html:12
+#, python-format
+msgid ""
+"Duró menos de %(m)s minutos: se guarda el flux, pero no cuenta para el flux "
+"por hora."
+msgstr ""
+"It lasted less than %(m)s minutes: the flux is saved, but it doesn't count "
+"toward flux per hour."
+
+#: farm/templates/farm/session_log.html:21
+msgid "Descartar esta sesión"
+msgstr "Discard this session"
+
+#: farm/templates/farm/session_new.html:6
+msgid "Anotar una sesión"
+msgstr "Log a session"
+
+#: farm/templates/farm/session_new.html:7
+msgid "Para cuando farmeaste sin el cronómetro."
+msgstr "For when you farmed without the timer."
+
+#: farm/templates/farm/stats.html:5
+msgid "Periodo"
+msgstr "Period"
+
+#: farm/templates/farm/stats.html:6
+msgid "7 días"
+msgstr "7 days"
+
+#: farm/templates/farm/stats.html:7
+msgid "30 días"
+msgstr "30 days"
+
+#: farm/templates/farm/stats.html:8
+msgid "Todo"
+msgstr "All time"
+
+#: farm/templates/farm/stats.html:16
+#, python-format
+msgid "en %(n)s sesión"
+msgid_plural "en %(n)s sesiones"
+msgstr[0] "in %(n)s session"
+msgstr[1] "in %(n)s sessions"
+
+#: farm/templates/farm/stats.html:17
+msgid "cubits"
+msgstr "cubits"
+
+#: farm/templates/farm/stats.html:23
+msgid "Lo que más te rinde"
+msgstr "Your best earner"
+
+#: farm/templates/farm/stats.html:25
+#, python-format
+msgid "%(fph)s flux por hora de media."
+msgstr "%(fph)s flux per hour on average."
+
+#: farm/templates/farm/stats.html:30
+msgid "Flux por hora según actividad"
+msgstr "Flux per hour by activity"
+
+#: farm/templates/farm/stats.html:42
+msgid ""
+"Las actividades con menos de 30 minutos anotados no cuentan para «lo que más"
+" te rinde»."
+msgstr ""
+"Activities with less than 30 minutes logged don't count for “your best "
+"earner”."
+
+#: farm/templates/farm/stats.html:46
+msgid "No hay sesiones anotadas en este periodo."
+msgstr "No sessions logged in this period."
+
+#: farm/templates/farm/stats.html:47
+msgid "Empezar a farmear"
+msgstr "Start farming"
+
+#: farm/templates/registration/login.html:12
+msgid "¿Olvidaste tu contraseña?"
+msgstr "Forgot your password?"
+
+#: farm/templates/registration/password_change_done.html:2
+#: farm/templates/registration/password_change_done.html:5
+#: farm/templates/registration/password_reset_complete.html:2
+#: farm/templates/registration/password_reset_complete.html:5
+msgid "Contraseña cambiada"
+msgstr "Password changed"
+
+#: farm/templates/registration/password_change_done.html:7
+msgid "Tu contraseña se actualizó."
+msgstr "Your password was updated."
+
+#: farm/templates/registration/password_change_done.html:8
+msgid "Volver al inicio"
+msgstr "Back to home"
+
+#: farm/templates/registration/password_reset_complete.html:7
+msgid "Listo. Ya puedes entrar con tu nueva contraseña."
+msgstr "Done. You can now log in with your new password."
+
+#: farm/templates/registration/password_reset_confirm.html:2
+#: farm/templates/registration/password_reset_confirm.html:5
+msgid "Nueva contraseña"
+msgstr "New password"
+
+#: farm/templates/registration/password_reset_confirm.html:10
+msgid "Guardar contraseña"
+msgstr "Save password"
+
+#: farm/templates/registration/password_reset_confirm.html:13
+msgid "El enlace ya no sirve (quizá ya se usó). Pide uno nuevo."
+msgstr ""
+"This link no longer works (maybe it was already used). Ask for a new one."
+
+#: farm/templates/registration/password_reset_confirm.html:14
+msgid "Pedir otro enlace"
+msgstr "Get a new link"
+
+#: farm/templates/registration/password_reset_done.html:2
+#: farm/templates/registration/password_reset_done.html:5
+msgid "Revisa tu correo"
+msgstr "Check your email"
+
+#: farm/templates/registration/password_reset_done.html:7
+msgid ""
+"Si hay una cuenta con ese correo, te llegará un enlace en unos minutos. Mira"
+" también en spam."
+msgstr ""
+"If there's an account with that email, a link will arrive in a few minutes. "
+"Check your spam folder too."
+
+#: farm/templates/registration/password_reset_email.html:1
+msgid "Hola"
+msgstr "Hi"
+
+#: farm/templates/registration/password_reset_email.html:3
+msgid ""
+"Alguien (ojalá tú) pidió cambiar la contraseña de tu cuenta de FluxLab. Abre"
+" este enlace para poner una nueva:"
+msgstr ""
+"Someone (hopefully you) asked to reset the password of your FluxLab account."
+" Open this link to set a new one:"
+
+#: farm/templates/registration/password_reset_email.html:7
+msgid "Si no fuiste tú, ignora este correo."
+msgstr "If it wasn't you, just ignore this email."
+
+#: farm/templates/registration/password_reset_form.html:2
+#: farm/templates/registration/password_reset_form.html:5
+msgid "Recuperar contraseña"
+msgstr "Reset password"
+
+#: farm/templates/registration/password_reset_form.html:7
+msgid "Escribe tu correo y te mandamos un enlace para poner una nueva."
+msgstr "Enter your email and we'll send you a link to set a new one."
+
+#: farm/templates/registration/password_reset_form.html:10
+msgid "Enviar enlace"
+msgstr "Send link"
+
+#: farm/templates/registration/password_reset_subject.txt:1
+msgid "Recupera tu contraseña de FluxLab"
+msgstr "Reset your FluxLab password"
+
+#: farm/templates/registration/signup.html:11
+msgid "¿Ya tienes cuenta?"
+msgstr "Already have an account?"
+
+#: farm/views.py:55
+msgid "¡Bienvenido a FluxLab! Dale a «Empezar» la próxima vez que farmees."
+msgstr "Welcome to FluxLab! Hit “Start” next time you farm."
+
+#: farm/views.py:66
+msgid "Ya tienes un cronómetro corriendo."
+msgstr "You already have a timer running."
+
+#: farm/views.py:109
+#, python-format
+msgid "Sesión guardada: %(flux)s flux en %(time)s (%(fph)s flux/h)."
+msgstr "Session saved: %(flux)s flux in %(time)s (%(fph)s flux/h)."
+
+#: farm/views.py:115
+#, python-format
+msgid ""
+"Sesión guardada: %(flux)s flux. Duró menos de %(min)s minutos, así que no "
+"cuenta para el flux por hora."
+msgstr ""
+"Session saved: %(flux)s flux. It lasted less than %(min)s minutes, so it "
+"doesn't count toward flux per hour."
+
+#: farm/views.py:134
+msgid "Sesión guardada."
+msgstr "Session saved."
+
+#: farm/views.py:144
+msgid "Sesión eliminada."
+msgstr "Session deleted."
+
+#: farm/views.py:178
+msgid "Meta creada. El flux que registres desde ahora cuenta para ella."
+msgstr "Goal created. Flux you log from now on counts toward it."
+
+#: farm/views.py:193
+msgid "¡Meta cumplida! 🎉"
+msgstr "Goal reached! 🎉"
+
+#: farm/views.py:201
+msgid "Meta eliminada."
+msgstr "Goal deleted."
+
+#: farm/views.py:211
+msgid "Perfil actualizado."
+msgstr "Profile updated."

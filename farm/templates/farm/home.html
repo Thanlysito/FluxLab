@@ -1,0 +1,103 @@
+{% extends "farm/base.html" %}{% load i18n farm_extras %}
+{% block title %}{% translate "Inicio" %}{% endblock %}
+{% block content %}
+<div class="grid grid-main">
+  <div>
+    {% if running_session %}
+      <section class="card timer-card running">
+        <div class="timer-label">
+          {% if running_session.activity %}{{ running_session.activity.display_name }} · {% endif %}{% translate "en marcha" %}
+        </div>
+        <div class="timer-digits" data-started="{{ running_session.started_at.isoformat }}">0:00:00</div>
+        <form class="timer-actions" method="post" action="{% url 'farm:session_stop' %}">{% csrf_token %}
+          <button class="btn btn-live" type="submit">{% translate "Terminar y anotar" %}</button>
+        </form>
+      </section>
+    {% else %}
+      <section class="card timer-card">
+        <div class="timer-label">{% translate "¿Vas a farmear?" %}</div>
+        <div class="timer-digits" style="color:var(--dim)">0:00:00</div>
+        <form class="timer-start" method="post" action="{% url 'farm:session_start' %}">{% csrf_token %}
+          <label for="id_start_activity" class="muted">{% translate "Actividad (la puedes cambiar al terminar)" %}</label>
+          <select id="id_start_activity" name="activity">
+            <option value="">{% translate "Todavía no sé" %}</option>
+            {% for a in activities %}<option value="{{ a.pk }}">{{ a.display_name }}</option>{% endfor %}
+          </select>
+          <div class="timer-actions">
+            <button class="btn" type="submit">{% translate "Empezar" %}</button>
+            <a class="btn btn-ghost" href="{% url 'farm:session_new' %}">{% translate "Anotar sin cronómetro" %}</a>
+          </div>
+        </form>
+      </section>
+    {% endif %}
+
+    {% if pending %}
+      <section class="card">
+        <div class="card-head"><h3>{% translate "Te falta anotar" %}</h3><span class="chip chip-warn">{{ pending|length }}</span></div>
+        <ul class="list">
+          {% for s in pending %}
+            <li>
+              <span>{{ s.started_at|date:"D j M, H:i" }} · {{ s.duration|duration }}</span>
+              <a class="btn btn-sm" href="{% url 'farm:session_log' s.pk %}">{% translate "Anotar" %}</a>
+            </li>
+          {% endfor %}
+        </ul>
+      </section>
+    {% endif %}
+
+    <section class="card">
+      <div class="card-head">
+        <h3>{% translate "Últimos 7 días" %}</h3>
+        <a class="muted" href="{% url 'farm:stats' %}">{% translate "Ver estadísticas" %} →</a>
+      </div>
+      <div class="kpis kpis-2">
+        <div class="kpi"><div class="value flux">{{ week.flux|fnum }}</div><div class="label">{% translate "flux" %}</div></div>
+        <div class="kpi"><div class="value">{{ week.hours|hm }}</div><div class="label">{% translate "farmeando" %}</div></div>
+        <div class="kpi"><div class="value">{% if week.rated_hours %}{{ week.flux_per_hour|fnum }}{% else %}—{% endif %}</div><div class="label">{% translate "flux por hora" %}</div></div>
+        <div class="kpi"><div class="value">{{ week.streak }}</div><div class="label">{% translate "días de racha" %}</div></div>
+      </div>
+      <div class="week" style="margin-top:16px" aria-label="{% translate 'Flux por día' %}">
+        {% for d in week.last_7_days %}
+          <div class="week-col" title="{{ d.date|date:'D j' }}: {{ d.flux|fnum }} flux">
+            <div class="week-bar{% if not d.flux %} zero{% endif %}" style="height:{% if d.flux %}{{ d.flux|pct:week.max_day_flux }}%{% else %}3px{% endif %}"></div>
+            <div class="week-day">{{ d.date|date:"D" }}</div>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  </div>
+
+  <div>
+    <section class="card">
+      <div class="card-head"><h3>{% translate "Metas" %}</h3><a class="muted" href="{% url 'farm:goals' %}">{% translate "Gestionar" %} →</a></div>
+      {% for g in goals %}
+        <div style="margin-bottom:14px">
+          <div style="display:flex;justify-content:space-between;gap:8px"><strong>{{ g.name }}</strong><span class="num muted">{{ g.percent }}%</span></div>
+          <div class="progress"><div class="progress-fill" style="width:{{ g.percent }}%"></div></div>
+          <div class="muted" style="font-size:.85rem">
+            <span class="num">{{ g.earned|fnum }} / {{ g.target_flux|fnum }}</span>
+            {% if g.eta_hours is not None %} · {% blocktranslate with h=g.eta_hours|hm %}unas {{ h }} a tu ritmo{% endblocktranslate %}{% endif %}
+          </div>
+        </div>
+      {% empty %}
+        <p class="empty">{% translate "¿Ahorrando para algo? Crea una meta y te decimos cuántas horas te faltan." %}</p>
+        <a class="btn btn-ghost btn-sm" href="{% url 'farm:goals' %}">{% translate "Crear meta" %}</a>
+      {% endfor %}
+    </section>
+
+    <section class="card">
+      <div class="card-head"><h3>{% translate "Sesiones recientes" %}</h3><a class="muted" href="{% url 'farm:history' %}">{% translate "Historial" %} →</a></div>
+      <ul class="list">
+        {% for s in recent %}
+          <li>
+            <span class="stack">{{ s.activity.display_name|default:_("Sin actividad") }}<small class="dim">{{ s.started_at|date:"D j" }} · {{ s.duration|duration }}</small></span>
+            <span class="stack num" style="text-align:right">{{ s.flux|fnum }}<small class="dim">{% if s.is_rated %}{{ s.flux_per_hour|fnum }}/h{% else %}—{% endif %}</small></span>
+          </li>
+        {% empty %}
+          <li class="empty">{% translate "Aún no has anotado ninguna sesión." %}</li>
+        {% endfor %}
+      </ul>
+    </section>
+  </div>
+</div>
+{% endblock %}
