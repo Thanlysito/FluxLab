@@ -44,18 +44,22 @@ python tools/traduccion_en.py        # rellena lo que ya está en el diccionario
 python manage.py compilemessages -l en
 ```
 
-En Windows `makemessages`/`compilemessages` necesitan gettext (por ejemplo `winget install GnuWin32.GetText` o las herramientas de mlocati). El `.mo` compilado se sube al repo, así Railway no necesita gettext.
+En Windows `makemessages`/`compilemessages` necesitan gettext (por ejemplo `winget install GnuWin32.GetText` o las herramientas de mlocati). El `.mo` compilado se sube al repo, así el servidor no necesita gettext.
 
-## Desplegar en Railway
+## Publicar gratis (Render + Neon)
 
-1. Nuevo proyecto → *Deploy from GitHub repo* → este repositorio.
-2. Agrega un servicio **PostgreSQL**; en el servicio web crea la variable `DATABASE_URL` = `${{Postgres.DATABASE_URL}}`.
-3. Variables del servicio web:
-   - `DJANGO_DEBUG=False`
-   - `DJANGO_SECRET_KEY=` (una clave larga aleatoria)
-   - `DJANGO_ALLOWED_HOSTS=` tu dominio de Railway
-   - `DJANGO_CSRF_TRUSTED_ORIGINS=https://` + ese dominio
-4. El `Procfile` corre migraciones, `collectstatic` y gunicorn en cada deploy.
+**Base de datos en Neon** (neon.tech): crea un proyecto y copia la *connection string* (empieza por `postgresql://` y termina en `?sslmode=require`).
+
+**Página en Render** (render.com): *New → Web Service* → este repo, plan **Free**.
+
+- Build Command: `bash build.sh`
+- Start Command: `gunicorn fluxlab.wsgi`
+- Variables:
+  - `DATABASE_URL` = la connection string de Neon
+  - `DJANGO_DEBUG` = `False`
+  - `DJANGO_SECRET_KEY` = una clave larga aleatoria (`python -c "import secrets; print(secrets.token_urlsafe(50))"`)
+
+Render se encarga solo de la dirección `.onrender.com`; `build.sh` instala, junta los estáticos y migra en cada deploy. En el plan gratis la página se duerme tras 15 minutos sin visitas.
 
 ## Estructura
 

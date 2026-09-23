@@ -30,6 +30,11 @@ if DEBUG:
 CSRF_TRUSTED_ORIGINS = [
     o.strip() for o in os.environ.get("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",") if o.strip()
 ]
+# Render pone esta variable sola con la direccion del servicio (xxx.onrender.com).
+RENDER_EXTERNAL_HOSTNAME = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+    CSRF_TRUSTED_ORIGINS.append(f"https://{RENDER_EXTERNAL_HOSTNAME}")
 
 # Sentry solo se activa si hay un DSN configurado.
 SENTRY_DSN = os.environ.get("SENTRY_DSN", "")
@@ -87,6 +92,8 @@ DATABASES = {
     "default": dj_database_url.config(
         default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
         conn_max_age=600,
+        # Neon duerme la base cuando no hay uso; esto revisa la conexion antes de usarla.
+        conn_health_checks=True,
     )
 }
 
