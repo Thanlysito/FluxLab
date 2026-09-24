@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-23 17:31-0500\n"
+"POT-Creation-Date: 2026-09-23 20:29-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -45,7 +45,7 @@ msgstr "Cubits earned"
 msgid "Clase"
 msgstr "Class"
 
-#: farm/forms.py:49 farm/models.py:70
+#: farm/forms.py:49 farm/models.py:85
 msgid "Power Rank"
 msgstr "Power Rank"
 
@@ -81,71 +81,71 @@ msgstr "Flux you need"
 msgid "Ej: Dragón nuevo, gemas, montura..."
 msgstr "E.g. new dragon, gems, mount..."
 
-#: farm/models.py:26
+#: farm/models.py:28
 msgid "nombre"
 msgstr "name"
 
-#: farm/models.py:27
+#: farm/models.py:29
 msgid "nombre en inglés"
 msgstr "English name"
 
-#: farm/models.py:28
+#: farm/models.py:30
 msgid "orden"
 msgstr "order"
 
-#: farm/models.py:29
+#: farm/models.py:31
 msgid "activa"
 msgstr "active"
 
-#: farm/models.py:33 farm/models.py:67
+#: farm/models.py:35 farm/models.py:82
 msgid "actividad"
 msgstr "activity"
 
-#: farm/models.py:34
+#: farm/models.py:36
 msgid "actividades"
 msgstr "activities"
 
-#: farm/models.py:46
+#: farm/models.py:48
 msgid "nombre en Trove"
 msgstr "Trove name"
 
-#: farm/models.py:47
+#: farm/models.py:49
 msgid "clase principal"
 msgstr "main class"
 
-#: farm/models.py:69
+#: farm/models.py:84
 msgid "clase"
 msgstr "class"
 
-#: farm/models.py:71
+#: farm/models.py:86
 msgid "inicio"
 msgstr "start"
 
-#: farm/models.py:72
+#: farm/models.py:87
 msgid "fin"
 msgstr "end"
 
-#: farm/models.py:73
+#: farm/models.py:88
 msgid "flux ganado"
 msgstr "flux earned"
 
-#: farm/models.py:74
+#: farm/models.py:89
 msgid "cubits ganados"
 msgstr "cubits earned"
 
-#: farm/models.py:75
+#: farm/models.py:90
 msgid "notas"
 msgstr "notes"
 
-#: farm/models.py:77
+#: farm/models.py:92
 msgid "contar en las estadísticas de la comunidad"
 msgstr "include in community stats"
 
-#: farm/models.py:125
+#: farm/models.py:146
 msgid "meta"
 msgstr "goal"
 
-#: farm/models.py:126
+#: farm/models.py:147
 msgid "flux objetivo"
 msgstr "target flux"
 
@@ -481,7 +481,39 @@ msgstr "Account: %(u)s"
 msgid "Guardar"
 msgstr "Save"
 
-#: farm/templates/farm/profile.html:13
+#: farm/templates/farm/profile.html:14
+msgid "Mod FluxLab Tracker"
+msgstr "FluxLab Tracker mod"
+
+#: farm/templates/farm/profile.html:15
+msgid ""
+"El programa de escritorio usa esta clave para enviar a tu cuenta las "
+"sesiones que registras con el mod dentro de Trove."
+msgstr ""
+"The desktop app uses this key to send the sessions you record with the in-"
+"game mod to your account."
+
+#: farm/templates/farm/profile.html:17
+msgid "Tu clave (cópiala ahora, no se vuelve a mostrar):"
+msgstr "Your key (copy it now, it won't be shown again):"
+
+#: farm/templates/farm/profile.html:20
+msgid ""
+"Ya tienes una clave activa. Si la perdiste, genera otra: la anterior deja de"
+" funcionar."
+msgstr ""
+"You already have an active key. If you lost it, generate a new one: the old "
+"one stops working."
+
+#: farm/templates/farm/profile.html:23
+msgid "Generar clave nueva"
+msgstr "Generate new key"
+
+#: farm/templates/farm/profile.html:23
+msgid "Generar clave"
+msgstr "Generate key"
+
+#: farm/templates/farm/profile.html:26
 #: farm/templates/registration/password_change_form.html:2
 #: farm/templates/registration/password_change_form.html:5
 msgid "Cambiar contraseña"
@@ -705,6 +737,6 @@ msgstr "Goal reached! 🎉"
 msgid "Meta eliminada."
 msgstr "Goal deleted."
 
-#: farm/views.py:211
+#: farm/views.py:219
 msgid "Perfil actualizado."
 msgstr "Profile updated."

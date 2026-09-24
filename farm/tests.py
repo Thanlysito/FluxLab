@@ -171,3 +171,56 @@ class SignupTest(TestCase):
         self.assertRedirects(r, reverse("farm:home"))
         user = User.objects.get(username="nuevo")
         self.assertTrue(hasattr(user, "profile"))
+
+
+class ModApiTest(Base):
+    url = "/api/sesiones/"
+
+    def setUp(self):
+        super().setUp()
+        self.key = self.user.profile.new_api_key() if hasattr(self.user, "profile") else None
+        if self.key is None:
+            from .models import Profile
+            self.key = Profile.objects.create(user=self.user).new_api_key()
+        self.client.logout()
+        now = int(timezone.now().timestamp())
+        self.payload = {"started_at": now - 111, "ended_at": now, "flux_start": 493846544, "flux_end": 493846794}
+
+    def post(self, payload, key=None):
+        import json
+        return self.client.post(self.url, json.dumps(payload), content_type="application/json",
+                                HTTP_AUTHORIZATION=f"Token {key or self.key}")
+
+    def test_creates_session_from_mod(self):
+        r = self.post(self.payload)
+        self.assertEqual(r.status_code, 201, r.content)
+        s = FarmSession.objects.get(user=self.user)
+        self.assertEqual((s.flux, s.source, s.is_logged), (250, "mod", True))
+        self.assertEqual(r.json()["flux"], 250)
+
+    def test_same_session_twice_is_saved_once(self):
+        self.post(self.payload)
+        r = self.post(self.payload)
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(FarmSession.objects.filter(user=self.user).count(), 1)
+
+    def test_rejects_bad_key_and_bad_data(self):
+        self.assertEqual(self.post(self.payload, key="fl_nope").status_code, 401)
+        self.assertEqual(self.client.post(self.url, "{}", content_type="application/json").status_code, 401)
+        self.assertEqual(self.post({**self.payload, "ended_at": self.payload["started_at"]}).status_code, 400)
+        self.assertEqual(self.post({"started_at": 1}).status_code, 400)
+        self.assertFalse(FarmSession.objects.exists())
+
+    def test_spent_flux_counts_as_zero_and_activity_optional(self):
+        r = self.post({**self.payload, "flux_end": 100, "activity": "delves"})
+        s = FarmSession.objects.get(user=self.user)
+        self.assertEqual((s.flux, s.activity.slug), (0, "delves"))
+
+    def test_regenerating_key_invalidates_old_one(self):
+        self.client.force_login(self.user)
+        self.client.post(reverse("farm:api_key"))
+        r = self.client.get(reverse("farm:profile"))
+        self.assertContains(r, "fl_")
+        self.assertNotContains(self.client.get(reverse("farm:profile")), 'value="fl_')
+        self.client.logout()
+        self.assertEqual(self.post(self.payload).status_code, 401)

@@ -178,6 +178,14 @@ EN = {
     "Duró menos de %(m)s minutos: se guarda el flux, pero no cuenta para el flux por hora.":
         "It lasted less than %(m)s minutes: the flux is saved, but it doesn't count toward flux per hour.",
     "Menos de 5 minutos: no cuenta para el flux/h": "Less than 5 minutes: doesn't count toward flux/h",
+    "Mod FluxLab Tracker": "FluxLab Tracker mod",
+    "El programa de escritorio usa esta clave para enviar a tu cuenta las sesiones que registras con el mod dentro de Trove.":
+        "The desktop app uses this key to send the sessions you record with the in-game mod to your account.",
+    "Tu clave (cópiala ahora, no se vuelve a mostrar):": "Your key (copy it now, it won't be shown again):",
+    "Ya tienes una clave activa. Si la perdiste, genera otra: la anterior deja de funcionar.":
+        "You already have an active key. If you lost it, generate a new one: the old one stops working.",
+    "Generar clave nueva": "Generate new key",
+    "Generar clave": "Generate key",
 }
 PLURALS = {
     "en %(n)s sesión": ["in %(n)s session", "in %(n)s sessions"],

@@ -203,6 +203,14 @@ def goal_delete(request, pk):
 
 
 @login_required
+@require_POST
+def api_key(request):
+    profile, _created = Profile.objects.get_or_create(user=request.user)
+    request.session["new_api_key"] = profile.new_api_key()
+    return redirect("farm:profile")
+
+
+@login_required
 def profile(request):
     obj, _created = Profile.objects.get_or_create(user=request.user)
     form = ProfileForm(request.POST or None, instance=obj)
@@ -210,4 +218,9 @@ def profile(request):
         form.save()
         messages.success(request, _("Perfil actualizado."))
         return redirect("farm:profile")
-    return render(request, "farm/profile.html", {"form": form})
+    return render(request, "farm/profile.html", {
+        "form": form,
+        "has_api_key": bool(obj.api_key_hash),
+        # La clave se muestra una sola vez, justo despues de generarla.
+        "new_api_key": request.session.pop("new_api_key", None),
+    })

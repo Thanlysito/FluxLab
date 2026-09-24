@@ -1,3 +1,5 @@
+import hashlib
+import secrets
 from datetime import timedelta
 
 from django.conf import settings
@@ -45,6 +47,19 @@ class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile")
     trove_name = models.CharField(_("nombre en Trove"), max_length=40, blank=True)
     main_class = models.CharField(_("clase principal"), max_length=30, choices=CLASS_CHOICES, blank=True)
+    # Clave para el mod/programa de escritorio. Solo se guarda su hash: la clave
+    # se muestra una vez al generarla.
+    api_key_hash = models.CharField(max_length=64, blank=True, db_index=True)
+
+    @staticmethod
+    def hash_key(key):
+        return hashlib.sha256(key.encode()).hexdigest()
+
+    def new_api_key(self):
+        key = "fl_" + secrets.token_urlsafe(24)
+        self.api_key_hash = self.hash_key(key)
+        self.save(update_fields=["api_key_hash"])
+        return key
 
     def __str__(self):
         return self.trove_name or self.user.username
@@ -75,6 +90,9 @@ class FarmSession(models.Model):
     notes = models.TextField(_("notas"), blank=True, max_length=1000)
     is_logged = models.BooleanField(default=False)
     share_with_community = models.BooleanField(_("contar en las estadísticas de la comunidad"), default=True)
+    source = models.CharField(max_length=10, choices=[("web", "Web"), ("mod", "Mod")], default="web")
+    # Identificador que manda el mod ("mod:<inicio>") para no guardar la misma sesion dos veces.
+    external_id = models.CharField(max_length=40, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     objects = FarmSessionQuerySet.as_manager()
@@ -85,6 +103,9 @@ class FarmSession(models.Model):
             # Solo un cronometro corriendo a la vez por jugador.
             models.UniqueConstraint(
                 fields=["user"], condition=Q(ended_at__isnull=True), name="one_running_session_per_user"
+            ),
+            models.UniqueConstraint(
+                fields=["user", "external_id"], condition=~Q(external_id=""), name="unique_external_session"
             ),
         ]
 
