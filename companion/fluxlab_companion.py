@@ -6,9 +6,13 @@ No toca el juego: solo lee el archivo que el propio Trove escribe.
 
 Uso:  py fluxlab_companion.py          (la primera vez te pide la direccion y la clave)
       py fluxlab_companion.py --config (para cambiarlas)
+      py fluxlab_companion.py --steam  (modo escondido: lo usa FluxLab_Steam.pyw, se
+                                        cierra solo cuando cierras Trove)
 """
 import json
 import os
+import socket
+import subprocess
 import sys
 import time
 import urllib.error
@@ -20,21 +24,42 @@ MOD_CFG = os.path.join(APPDATA, "Trove", "ModCfgs", "FluxLab Tracker.cfg")
 HOME = os.path.join(APPDATA, "FluxLab")
 CONFIG = os.path.join(HOME, "config.json")
 SENT = os.path.join(HOME, "enviadas.txt")
+LOG_FILE = os.path.join(HOME, "companion.log")
 POLL_SECONDS = 2
 RETRY_SECONDS = 30
 
+# Modo Steam
+GAME_EXES = ("trove.exe", "trove_x64.exe")
+WAIT_FOR_GAME = 20 * 60      # Glyph puede tardar (login, parches) antes de abrir el juego
+GAME_GONE_AFTER = 45         # segundos sin ver el juego para darlo por cerrado
+FINAL_SEND_WINDOW = 4 * 60   # tras cerrar, cuanto insistir si queda una sesion sin enviar
+PROCESS_CHECK_EVERY = 10
+LOCK_PORT = 47831            # evita dos companions a la vez
+
+_log_to_file = False
+
 
 def log(msg):
-    print(f"[{datetime.now():%H:%M:%S}] {msg}", flush=True)
+    line = f"[{datetime.now():%Y-%m-%d %H:%M:%S}] {msg}"
+    if _log_to_file:
+        try:
+            if os.path.exists(LOG_FILE) and os.path.getsize(LOG_FILE) > 200_000:
+                os.replace(LOG_FILE, LOG_FILE + ".old")
+            with open(LOG_FILE, "a", encoding="utf-8") as f:
+                f.write(line + "\n")
+        except OSError:
+            pass
+    else:
+        print(line, flush=True)
 
 
-def load_config(force=False):
+def load_config(force=False, interactive=True):
     os.makedirs(HOME, exist_ok=True)
     cfg = {}
     if os.path.exists(CONFIG):
         with open(CONFIG, encoding="utf-8") as f:
             cfg = json.load(f)
-    if force or not cfg.get("url") or not cfg.get("key"):
+    if (force or not cfg.get("url") or not cfg.get("key")) and interactive:
         print("Configuracion de FluxLab Companion")
         url = input(f"Direccion de FluxLab [{cfg.get('url', 'https://fluxlab.onrender.com')}]: ").strip()
         cfg["url"] = (url or cfg.get("url") or "https://fluxlab.onrender.com").rstrip("/")
@@ -89,46 +114,158 @@ def send(cfg, value):
         return json.loads(r.read().decode())
 
 
-def main():
-    cfg = load_config(force="--config" in sys.argv)
-    sent = load_sent()
-    log(f"Vigilando {MOD_CFG}")
-    log("Dale 'FluxLab: Empezar' y 'Terminar' en la pestana de monedas del inventario. Ctrl+C para salir.")
-    last_seen, retry_at = None, 0.0
-    while True:
+class Watcher:
+    """Lee el archivo del mod y manda las sesiones terminadas que falten."""
+
+    def __init__(self, cfg):
+        self.cfg = cfg
+        os.makedirs(HOME, exist_ok=True)
+        self.sent = load_sent()
+        self.last_seen = None
+        self.retry_at = 0.0
+
+    def _done(self, value):
+        mark_sent(value)
+        self.sent.add(value)
+
+    def step(self):
+        """Una pasada. Devuelve True si queda una sesion terminada sin enviar."""
         value = read_session_line()
-        if value and value != last_seen:
+        if value and value != self.last_seen:
             if value.startswith("start|"):
                 log("Sesion en curso...")
-            last_seen = value
-        if value and value.startswith("end|") and value not in sent and time.time() >= retry_at:
-            try:
-                res = send(cfg, value)
-                mark_sent(value)
-                sent.add(value)
-                fph = res.get("flux_per_hour")
-                log(f"Sesion enviada: +{res['flux']:,} flux en {res['minutes']} min"
-                    + (f" ({fph:,} flux/h)" if fph else "") + f"  {res.get('url', '')}")
-            except urllib.error.HTTPError as e:
-                detail = e.read().decode(errors="replace")[:200]
-                if e.code == 401:
-                    log("La clave no es valida. Corre el programa con --config y pega una clave nueva.")
-                    retry_at = time.time() + 3600
-                elif 400 <= e.code < 500:
-                    log(f"FluxLab rechazo la sesion ({e.code}): {detail}. No se reintenta.")
-                    mark_sent(value)
-                    sent.add(value)
-                else:
-                    log(f"Error del servidor ({e.code}); reintento en {RETRY_SECONDS} s.")
-                    retry_at = time.time() + RETRY_SECONDS
-            except (urllib.error.URLError, TimeoutError, OSError) as e:
-                log(f"Sin conexion con FluxLab ({e}); reintento en {RETRY_SECONDS} s.")
-                retry_at = time.time() + RETRY_SECONDS
-            except ValueError:
-                log(f"Linea de sesion con formato raro, se ignora: {value}")
-                mark_sent(value)
-                sent.add(value)
+            self.last_seen = value
+        if not (value and value.startswith("end|") and value not in self.sent):
+            return False
+        if time.time() < self.retry_at:
+            return True
+        try:
+            res = send(self.cfg, value)
+            self._done(value)
+            fph = res.get("flux_per_hour")
+            log(f"Sesion enviada: +{res['flux']:,} flux en {res['minutes']} min"
+                + (f" ({fph:,} flux/h)" if fph else "") + f"  {res.get('url', '')}")
+            return False
+        except urllib.error.HTTPError as e:
+            detail = e.read().decode(errors="replace")[:200]
+            if e.code == 401:
+                log("La clave no es valida. Corre el programa con --config y pega una clave nueva.")
+                self.retry_at = time.time() + 3600
+                return False  # no tiene sentido insistir con una clave mala
+            if 400 <= e.code < 500:
+                log(f"FluxLab rechazo la sesion ({e.code}): {detail}. No se reintenta.")
+                self._done(value)
+                return False
+            log(f"Error del servidor ({e.code}); reintento en {RETRY_SECONDS} s.")
+        except (urllib.error.URLError, TimeoutError, OSError) as e:
+            log(f"Sin conexion con FluxLab ({e}); reintento en {RETRY_SECONDS} s.")
+        except (ValueError, KeyError):
+            log(f"Linea de sesion con formato raro, se ignora: {value}")
+            self._done(value)
+            return False
+        self.retry_at = time.time() + RETRY_SECONDS
+        return True
+
+
+def game_running():
+    """True si Trove esta abierto. None si no se pudo mirar."""
+    try:
+        out = subprocess.run(
+            ["tasklist", "/fo", "csv", "/nh"], capture_output=True, text=True, timeout=15,
+            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+        ).stdout.lower()
+    except (OSError, subprocess.SubprocessError):
+        return None
+    return any(f'"{exe}"' in out for exe in GAME_EXES)
+
+
+def single_instance():
+    """Devuelve un socket abierto si somos el unico companion, o None si ya hay otro."""
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        s.bind(("127.0.0.1", LOCK_PORT))
+        s.listen(1)
+        return s
+    except OSError:
+        s.close()
+        return None
+
+
+def run_normal(cfg):
+    w = Watcher(cfg)
+    log(f"Vigilando {MOD_CFG}")
+    log("Dale EMPEZAR y TERMINAR en la franja FLUXLAB de la pestana de monedas. Ctrl+C para salir.")
+    while True:
+        w.step()
         time.sleep(POLL_SECONDS)
+
+
+def run_steam(cfg, is_running=game_running, sleep=time.sleep, clock=time.monotonic):
+    """Corre mientras Trove este abierto y se cierra solo despues."""
+    w = Watcher(cfg)
+    log("Modo Steam: esperando a que abra Trove.")
+    start = clock()
+    seen_game = False
+    last_game = None
+    last_check = -PROCESS_CHECK_EVERY
+    closed_at = None
+    while True:
+        pending = w.step()
+        now = clock()
+        if now - last_check >= PROCESS_CHECK_EVERY:
+            last_check = now
+            running = is_running()
+            if running is None:
+                running = True  # si no podemos mirar, mejor seguir vivos
+            if running:
+                if not seen_game:
+                    log("Trove abierto. Vigilando sesiones.")
+                seen_game, last_game, closed_at = True, now, None
+            elif not seen_game and now - start > WAIT_FOR_GAME:
+                log("Trove no se abrio; me cierro.")
+                return
+            elif seen_game and closed_at is None and now - last_game > GAME_GONE_AFTER:
+                closed_at = now
+                log("Trove cerrado.")
+        if closed_at is not None:
+            if not pending:
+                log("Nada pendiente; me cierro.")
+                return
+            if now - closed_at > FINAL_SEND_WINDOW:
+                log("No se pudo enviar la ultima sesion; se enviara la proxima vez.")
+                return
+        sleep(POLL_SECONDS)
+
+
+def main():
+    global _log_to_file
+    steam = "--steam" in sys.argv
+    if steam:
+        _log_to_file = True
+        if single_instance_lock() is None:
+            log("Ya hay un companion abierto; no abro otro.")
+            return
+        cfg = load_config(interactive=False)
+        if not cfg.get("url") or not cfg.get("key"):
+            log("Falta configurar: abre FluxLab.bat una vez y pon la direccion y la clave.")
+            return
+        run_steam(cfg)
+    else:
+        cfg = load_config(force="--config" in sys.argv)
+        if single_instance_lock() is None:
+            log("Ojo: ya hay otro companion abierto (quizas el de Steam). No pasa nada, "
+                "las sesiones no se duplican.")
+        run_normal(cfg)
+
+
+_lock = None
+
+
+def single_instance_lock():
+    global _lock
+    if _lock is None:
+        _lock = single_instance()
+    return _lock
 
 
 if __name__ == "__main__":
