@@ -20,7 +20,8 @@ import urllib.request
 from datetime import datetime
 
 APPDATA = os.environ.get("APPDATA", os.path.expanduser("~"))
-MOD_CFG = os.path.join(APPDATA, "Trove", "ModCfgs", "FluxLab Tracker.cfg")
+MOD_CFGS = os.path.join(APPDATA, "Trove", "ModCfgs")
+MOD_CFG = os.path.join(MOD_CFGS, "FluxLab Tracker.cfg")
 HOME = os.path.join(APPDATA, "FluxLab")
 CONFIG = os.path.join(HOME, "config.json")
 SENT = os.path.join(HOME, "enviadas.txt")
@@ -150,6 +151,42 @@ def mark_sent(value):
         f.write(value + "\n")
 
 
+def read_player():
+    """Clase y Power Rank que anota el mod del HUD (PlayerHud con FluxLab).
+    Busca las claves fluxlab_class / fluxlab_pr en cualquier archivo de ModCfgs,
+    porque el HUD guarda en el archivo del mod que lo contiene."""
+    found = {}
+    newest = -1.0
+    try:
+        names = [n for n in os.listdir(MOD_CFGS) if n.lower().endswith(".cfg")]
+    except OSError:
+        return found
+    for name in names:
+        path = os.path.join(MOD_CFGS, name)
+        try:
+            mtime = os.path.getmtime(path)
+            with open(path, encoding="utf-8", errors="replace") as f:
+                data = {}
+                for line in f:
+                    k, sep, v = line.partition("=")
+                    if sep and k.strip().lower() in ("fluxlab_class", "fluxlab_pr"):
+                        data[k.strip().lower()] = v.strip()
+        except OSError:
+            continue
+        if data and mtime > newest:
+            newest, found = mtime, data
+    player = {}
+    if found.get("fluxlab_class"):
+        player["trove_class"] = found["fluxlab_class"]
+    try:
+        pr = int(found.get("fluxlab_pr", "0"))
+        if pr > 0:
+            player["power_rank"] = pr
+    except ValueError:
+        pass
+    return player
+
+
 def send(cfg, value, loot=None):
     # end|fin|flux_fin|inicio|flux_inicio
     _, ended, flux_end, started, flux_start = value.split("|")[:5]
@@ -159,6 +196,7 @@ def send(cfg, value, loot=None):
     }
     if loot:
         payload["loot"] = loot
+    payload.update(read_player())
     body = json.dumps(payload).encode()
     req = urllib.request.Request(
         cfg["url"] + "/api/sesiones/", data=body, method="POST",

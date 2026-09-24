@@ -243,6 +243,7 @@ class LootTest(ModApiTest):
         self.assertEqual(r.status_code, 201, r.content)
         s = FarmSession.objects.get(user=self.user)
         self.assertEqual(s.loot.count(), 3)
+        self.assertIsNone(s.activity)
         self.client.force_login(self.user)
         page = self.client.get(reverse("farm:session_log", args=[s.pk]))
         self.assertContains(page, "Cajas de gemas")
@@ -251,6 +252,16 @@ class LootTest(ModApiTest):
         st = self.client.get(reverse("farm:stats"))
         self.assertContains(st, "Lo farmeado")
         self.assertContains(st, "Glim")
+
+    def test_class_pr_and_activity_guess(self):
+        loot = [{"key": "c:item/crafting/delvekey_01_fragment", "name": "Delve Shadowkey Fragments", "qty": 38}]
+        self.post({**self.payload, "loot": loot, "trove_class": "Shadow Hunter", "power_rank": 42310})
+        s = FarmSession.objects.get(user=self.user)
+        self.assertEqual((s.activity.slug, s.trove_class, s.power_rank), ("delves", "Shadow Hunter", 42310))
+
+    def test_class_name_any_case(self):
+        self.post({**self.payload, "trove_class": "SHADOW  HUNTER"})
+        self.assertEqual(FarmSession.objects.get(user=self.user).trove_class, "Shadow Hunter")
 
     def test_loot_can_arrive_later_but_not_twice(self):
         self.post(self.payload)

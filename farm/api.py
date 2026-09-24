@@ -20,6 +20,7 @@ from .models import CLASS_CHOICES, Activity, FarmSession, LootItem, Profile
 MAX_SESSION = timedelta(hours=24)
 MAX_LOOT_ITEMS = 400
 VALID_CLASSES = {c for c, _ in CLASS_CHOICES}
+CLASS_BY_LOWER = {c.lower(): c for c in VALID_CLASSES}
 
 
 def _error(msg, status=400):
@@ -43,6 +44,19 @@ def _clean_loot(raw):
         if key and name and 0 < qty <= 2_000_000_000:
             items[key] = (name, qty)
     return items
+
+
+# Objetos que solo salen en una actividad: si la sesion los trae, esa es la actividad.
+ACTIVITY_HINTS = [
+    ("c:item/crafting/delvekey", "delves"),
+]
+
+
+def _guess_activity(loot):
+    for prefix, slug in ACTIVITY_HINTS:
+        if any(k.startswith(prefix) for k in loot):
+            return Activity.objects.filter(slug=slug, is_active=True).first()
+    return None
 
 
 def _user_from_request(request):
@@ -86,15 +100,19 @@ def sessions(request):
     activity = None
     if data.get("activity"):
         activity = Activity.objects.filter(slug=str(data["activity"]), is_active=True).first()
-    trove_class = str(data.get("trove_class") or "")
-    if trove_class not in VALID_CLASSES:
-        trove_class = ""
+    # El HUD manda el nombre tal como lo muestra el juego: se compara sin mayusculas.
+    raw_class = " ".join(str(data.get("trove_class") or "").split()).lower()
+    trove_class = CLASS_BY_LOWER.get(raw_class, "")
     try:
         power_rank = int(data["power_rank"]) if data.get("power_rank") else None
     except (TypeError, ValueError):
         power_rank = None
     if trove_class == "" and hasattr(user, "profile"):
         trove_class = user.profile.main_class
+
+    loot = _clean_loot(data.get("loot"))
+    if activity is None:
+        activity = _guess_activity(loot)
 
     session, created = FarmSession.objects.get_or_create(
         user=user,
@@ -111,7 +129,6 @@ def sessions(request):
             "is_logged": True,
         },
     )
-    loot = _clean_loot(data.get("loot"))
     # Una sesion que llego sin objetos (companion viejo, foto incompleta) los puede
     # recibir despues; si ya los tiene no se tocan.
     if loot and not session.loot.exists():
