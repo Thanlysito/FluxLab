@@ -7,7 +7,7 @@ from django.utils import timezone
 
 from .models import Activity, FarmSession, Goal
 from .stats import user_stats
-from .templatetags.farm_extras import fnum, hm, pct
+from .templatetags.farm_extras import duration, fnum, hm, pct
 
 
 def make_session(user, minutes=60, flux=10000, activity=None, days_ago=0, **kw):
@@ -158,6 +158,8 @@ class FiltersTest(TestCase):
         self.assertEqual(fnum(1234567), "1.234.567")
         self.assertEqual(hm(1.5), "1 h 30 min")
         self.assertEqual(hm(0.25), "15 min")
+        self.assertEqual(duration(timedelta(seconds=287)), "4 min 47 s")
+        self.assertEqual(duration(timedelta(seconds=27)), "27 s")
         self.assertEqual(pct(5, 10), 50)
         self.assertEqual(pct(5, 0), 0)
 

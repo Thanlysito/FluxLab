@@ -28,8 +28,15 @@ def hm(hours):
 
 @register.filter
 def duration(td):
-    """timedelta -> '1 h 05 min'."""
-    return hm(td.total_seconds() / 3600) if td is not None else ""
+    """timedelta -> '1 h 05 min'. Por debajo de 10 minutos muestra los segundos
+    ('4 min 47 s'), para que no parezca que una sesion de 4:47 duro 5 minutos."""
+    if td is None:
+        return ""
+    secs = int(td.total_seconds())
+    if secs < 600:
+        m, s = divmod(secs, 60)
+        return f"{m} min {s:02d} s" if m else f"{s} s"
+    return hm(secs / 3600)
 
 
 @register.filter
