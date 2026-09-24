@@ -5,11 +5,13 @@ from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db import IntegrityError
+from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
+from .loot import loot_totals, session_loot
 from .forms import GoalForm, ManualSessionForm, ProfileForm, SessionResultForm, SignupForm
 from .models import MIN_RATED_MINUTES, Activity, FarmSession, Goal, Profile
 from .stats import recent_flux_per_hour, user_stats
@@ -117,6 +119,7 @@ def session_log(request, pk):
         return redirect("farm:home")
     return render(request, "farm/session_log.html", {
         "form": form, "session": session, "min_rated": MIN_RATED_MINUTES,
+        "loot": session_loot(session),
     })
 
 
@@ -147,7 +150,8 @@ def session_delete(request, pk):
 
 @login_required
 def history(request):
-    qs = request.user.farm_sessions.filter(ended_at__isnull=False).select_related("activity")
+    qs = (request.user.farm_sessions.filter(ended_at__isnull=False).select_related("activity")
+          .annotate(loot_count=Count("loot")).order_by("-started_at"))
     page = Paginator(qs, 20).get_page(request.GET.get("page"))
     return render(request, "farm/history.html", {"page_obj": page})
 
@@ -164,6 +168,7 @@ def stats(request):
     since = timezone.now() - timedelta(days=days) if days else None
     return render(request, "farm/stats.html", {
         "stats": user_stats(request.user, since=since),
+        "loot": loot_totals(request.user, since=since),
         "period": period if period in PERIODS else "30",
     })
 

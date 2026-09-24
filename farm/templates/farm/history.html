@@ -17,7 +17,7 @@
       {% for s in page_obj %}
         <tr>
           <td>{{ s.started_at|date:"j M, H:i" }}</td>
-          <td>{{ s.activity.display_name|default:"—" }}{% if s.source == "mod" %} <span class="chip chip-live">mod</span>{% endif %}{% if s.trove_class %} <span class="dim">· {{ s.get_trove_class_display }}</span>{% endif %}</td>
+          <td>{{ s.activity.display_name|default:"—" }}{% if s.source == "mod" %} <span class="chip chip-live">mod</span>{% endif %}{% if s.trove_class %} <span class="dim">· {{ s.get_trove_class_display }}</span>{% endif %}{% if s.loot_count %} <a class="dim" href="{% url 'farm:session_log' s.pk %}">· {% blocktranslate count n=s.loot_count %}{{ n }} objeto{% plural %}{{ n }} objetos{% endblocktranslate %}</a>{% endif %}</td>
           <td>{{ s.duration|duration }}</td>
           {% if s.is_logged %}
             <td class="num">{{ s.flux|fnum }}</td><td class="num">{% if s.is_rated %}{{ s.flux_per_hour|fnum }}{% else %}<span class="dim" title="{% translate 'Menos de 5 minutos: no cuenta para el flux/h' %}">—</span>{% endif %}</td>

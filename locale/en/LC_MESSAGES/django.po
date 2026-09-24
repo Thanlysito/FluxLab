@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-23 20:29-0500\n"
+"POT-Creation-Date: 2026-09-24 15:28-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -81,6 +81,18 @@ msgstr "Flux you need"
 msgid "Ej: Dragón nuevo, gemas, montura..."
 msgstr "E.g. new dragon, gems, mount..."
 
+#: farm/loot.py:8
+msgid "Cajas de gemas"
+msgstr "Gem boxes"
+
+#: farm/loot.py:9
+msgid "Monedas y materiales"
+msgstr "Currencies and materials"
+
+#: farm/loot.py:10
+msgid "Objetos"
+msgstr "Items"
+
 #: farm/models.py:28
 msgid "nombre"
 msgstr "name"
@@ -141,11 +153,21 @@ msgstr "notes"
 msgid "contar en las estadísticas de la comunidad"
 msgstr "include in community stats"
 
-#: farm/models.py:146
+#: farm/models.py:149
+#| msgid "flux objetivo"
+msgid "objeto"
+msgstr "item"
+
+#: farm/models.py:150
+#| msgid "Actividad"
+msgid "cantidad"
+msgstr "quantity"
+
+#: farm/models.py:164
 msgid "meta"
 msgstr "goal"
 
-#: farm/models.py:147
+#: farm/models.py:165
 msgid "flux objetivo"
 msgstr "target flux"
 
@@ -279,6 +301,13 @@ msgstr "Flux"
 #: farm/templates/farm/history.html:14
 msgid "Flux/h"
 msgstr "Flux/h"
+
+#: farm/templates/farm/history.html:20
+#, python-format
+msgid "%(n)s objeto"
+msgid_plural "%(n)s objetos"
+msgstr[0] "%(n)s item"
+msgstr[1] "%(n)s items"
 
 #: farm/templates/farm/history.html:23
 msgid "Menos de 5 minutos: no cuenta para el flux/h"
@@ -536,7 +565,20 @@ msgstr ""
 "It lasted less than %(m)s minutes: the flux is saved, but it doesn't count "
 "toward flux per hour."
 
-#: farm/templates/farm/session_log.html:21
+#: farm/templates/farm/session_log.html:21 farm/templates/farm/stats.html:46
+#| msgid "farmeando"
+msgid "Lo farmeado"
+msgstr "What you farmed"
+
+#: farm/templates/farm/session_log.html:28
+msgid ""
+"Sale de comparar tu inventario al empezar y al terminar. Si usaste o "
+"vendiste algo durante la sesión, ese objeto aparece con menos o no aparece."
+msgstr ""
+"Worked out by comparing your inventory at the start and at the end. If you "
+"used or sold something during the session, it shows up lower or not at all."
+
+#: farm/templates/farm/session_log.html:33
 msgid "Descartar esta sesión"
 msgstr "Discard this session"
 
@@ -596,11 +638,35 @@ msgstr ""
 "Activities with less than 30 minutes logged don't count for “your best "
 "earner”."
 
-#: farm/templates/farm/stats.html:46
+#: farm/templates/farm/stats.html:47
+#, python-format
+#| msgid "en %(n)s sesión"
+#| msgid_plural "en %(n)s sesiones"
+msgid "%(n)s sesión del mod"
+msgid_plural "%(n)s sesiones del mod"
+msgstr[0] "%(n)s mod session"
+msgstr[1] "%(n)s mod sessions"
+
+#: farm/templates/farm/stats.html:53
+#, python-format
+msgid "y %(n)s más"
+msgid_plural "y %(n)s más"
+msgstr[0] "and %(n)s more"
+msgstr[1] "and %(n)s more"
+
+#: farm/templates/farm/stats.html:55
+msgid ""
+"Solo cuentan las sesiones del mod que guardaron la foto del inventario. El "
+"«por hora» usa las de 5 minutos o más."
+msgstr ""
+"Only mod sessions that saved an inventory snapshot count. The per-hour "
+"figure uses sessions of 5 minutes or more."
+
+#: farm/templates/farm/stats.html:60
 msgid "No hay sesiones anotadas en este periodo."
 msgstr "No sessions logged in this period."
 
-#: farm/templates/farm/stats.html:47
+#: farm/templates/farm/stats.html:61
 msgid "Empezar a farmear"
 msgstr "Start farming"
 
@@ -695,20 +761,20 @@ msgstr "Reset your FluxLab password"
 msgid "¿Ya tienes cuenta?"
 msgstr "Already have an account?"
 
-#: farm/views.py:55
+#: farm/views.py:57
 msgid "¡Bienvenido a FluxLab! Dale a «Empezar» la próxima vez que farmees."
 msgstr "Welcome to FluxLab! Hit “Start” next time you farm."
 
-#: farm/views.py:66
+#: farm/views.py:68
 msgid "Ya tienes un cronómetro corriendo."
 msgstr "You already have a timer running."
 
-#: farm/views.py:109
+#: farm/views.py:111
 #, python-format
 msgid "Sesión guardada: %(flux)s flux en %(time)s (%(fph)s flux/h)."
 msgstr "Session saved: %(flux)s flux in %(time)s (%(fph)s flux/h)."
 
-#: farm/views.py:115
+#: farm/views.py:117
 #, python-format
 msgid ""
 "Sesión guardada: %(flux)s flux. Duró menos de %(min)s minutos, así que no "
@@ -717,26 +783,26 @@ msgstr ""
 "Session saved: %(flux)s flux. It lasted less than %(min)s minutes, so it "
 "doesn't count toward flux per hour."
 
-#: farm/views.py:134
+#: farm/views.py:137
 msgid "Sesión guardada."
 msgstr "Session saved."
 
-#: farm/views.py:144
+#: farm/views.py:147
 msgid "Sesión eliminada."
 msgstr "Session deleted."
 
-#: farm/views.py:178
+#: farm/views.py:183
 msgid "Meta creada. El flux que registres desde ahora cuenta para ella."
 msgstr "Goal created. Flux you log from now on counts toward it."
 
-#: farm/views.py:193
+#: farm/views.py:198
 msgid "¡Meta cumplida! 🎉"
 msgstr "Goal reached! 🎉"
 
-#: farm/views.py:201
+#: farm/views.py:206
 msgid "Meta eliminada."
 msgstr "Goal deleted."
 
-#: farm/views.py:219
+#: farm/views.py:224
 msgid "Perfil actualizado."
 msgstr "Profile updated."

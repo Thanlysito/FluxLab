@@ -16,6 +16,18 @@
       <div class="timer-actions"><button class="btn" type="submit">{% translate "Guardar" %}</button></div>
     </form>
   </section>
+  {% if loot %}
+  <section class="card">
+    <div class="card-head"><h2>{% translate "Lo farmeado" %}</h2><span class="chip chip-live">mod</span></div>
+    {% for title, items in loot %}
+      <h3 class="loot-title">{{ title }}</h3>
+      <ul class="list">
+        {% for it in items %}<li><span>{{ it.name }}</span><span class="num">+{{ it.quantity|fnum }}</span></li>{% endfor %}
+      </ul>
+    {% endfor %}
+    <p class="muted" style="font-size:.85rem;margin-bottom:0">{% translate "Sale de comparar tu inventario al empezar y al terminar. Si usaste o vendiste algo durante la sesión, ese objeto aparece con menos o no aparece." %}</p>
+  </section>
+  {% endif %}
   <form method="post" action="{% url 'farm:session_delete' session.pk %}" style="margin-top:14px">{% csrf_token %}
     <input type="hidden" name="next" value="{% url 'farm:home' %}">
     <button class="btn btn-danger btn-sm" type="submit">{% translate "Descartar esta sesión" %}</button>

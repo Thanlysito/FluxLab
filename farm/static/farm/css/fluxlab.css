@@ -307,3 +307,5 @@ input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--flux); }
 .nav a.btn, .nav a.btn:hover { color: #150b26; border-bottom: 0; padding: 7px 11px; }
 .grid > .card + .card, .steps > .card + .card { margin-top: 0; }
 .actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.loot-title { font-size: 0.8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 18px 0 2px; }
+.card-head + .loot-title { margin-top: 6px; }

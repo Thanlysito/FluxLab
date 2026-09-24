@@ -41,6 +41,20 @@
   {% endwith %}
   <p class="muted" style="font-size:.85rem;margin-bottom:0">{% translate "Las actividades con menos de 30 minutos anotados no cuentan para «lo que más te rinde»." %}</p>
 </section>
+{% if loot %}
+<section class="card">
+  <div class="card-head"><h3>{% translate "Lo farmeado" %}</h3>
+    <span class="muted" style="font-size:.85rem">{% blocktranslate count n=loot.sessions %}{{ n }} sesión del mod{% plural %}{{ n }} sesiones del mod{% endblocktranslate %}</span></div>
+  {% for title, items, more in loot.groups %}
+    <h3 class="loot-title">{{ title }}</h3>
+    <ul class="list">
+      {% for it in items %}<li><span>{{ it.name }}</span><span class="num">{{ it.quantity|fnum }}{% if it.per_hour %} <span class="dim">· {{ it.per_hour }}/h</span>{% endif %}</span></li>{% endfor %}
+    </ul>
+    {% if more %}<p class="dim" style="font-size:.85rem">{% blocktranslate count n=more %}y {{ n }} más{% plural %}y {{ n }} más{% endblocktranslate %}</p>{% endif %}
+  {% endfor %}
+  <p class="muted" style="font-size:.85rem;margin-bottom:0">{% translate "Solo cuentan las sesiones del mod que guardaron la foto del inventario. El «por hora» usa las de 5 minutos o más." %}</p>
+</section>
+{% endif %}
 {% else %}
 <section class="card">
   <p class="empty">{% translate "No hay sesiones anotadas en este periodo." %}</p>

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Activity, FarmSession, Goal, Profile
+from .models import Activity, FarmSession, Goal, LootItem, Profile
 
 
 @admin.register(Activity)
@@ -10,8 +10,14 @@ class ActivityAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name_en",)}
 
 
+class LootItemInline(admin.TabularInline):
+    model = LootItem
+    extra = 0
+
+
 @admin.register(FarmSession)
 class FarmSessionAdmin(admin.ModelAdmin):
+    inlines = [LootItemInline]
     list_display = ("user", "activity", "started_at", "ended_at", "flux", "is_logged", "share_with_community")
     list_filter = ("activity", "is_logged", "share_with_community")
     search_fields = ("user__username",)

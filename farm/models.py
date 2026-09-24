@@ -139,6 +139,24 @@ class FarmSession(models.Model):
         return round(self.flux / self.hours) if self.is_rated else None
 
 
+class LootItem(models.Model):
+    """Algo que ganaste en una sesion del mod, aparte del flux: materiales, cajas de
+    gemas, cofres... El mod saca una foto del inventario al empezar y al terminar,
+    y el companion manda la diferencia."""
+    session = models.ForeignKey(FarmSession, on_delete=models.CASCADE, related_name="loot")
+    # "c:item/crafting/..." para monedas y materiales, "a:<nombre>" para la mochila.
+    key = models.CharField(max_length=160)
+    name = models.CharField(_("objeto"), max_length=120)
+    quantity = models.PositiveIntegerField(_("cantidad"))
+
+    class Meta:
+        ordering = ["-quantity", "name"]
+        constraints = [models.UniqueConstraint(fields=["session", "key"], name="unique_loot_per_session")]
+
+    def __str__(self):
+        return f"{self.name} x{self.quantity}"
+
+
 class Goal(models.Model):
     """Meta de ahorro: 'Juntar 500.000 flux para X'. El progreso cuenta el flux
     de las sesiones registradas desde que se creo la meta."""

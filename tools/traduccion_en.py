@@ -7,6 +7,14 @@ from pathlib import Path
 import polib
 
 EN = {
+    "Cajas de gemas": "Gem boxes",
+    "Monedas y materiales": "Currencies and materials",
+    "Objetos": "Items",
+    "objeto": "item",
+    "cantidad": "quantity",
+    "Lo farmeado": "What you farmed",
+    "Sale de comparar tu inventario al empezar y al terminar. Si usaste o vendiste algo durante la sesión, ese objeto aparece con menos o no aparece.": "Worked out by comparing your inventory at the start and at the end. If you used or sold something during the session, it shows up lower or not at all.",
+    "Solo cuentan las sesiones del mod que guardaron la foto del inventario. El «por hora» usa las de 5 minutos o más.": "Only mod sessions that saved an inventory snapshot count. The per-hour figure uses sessions of 5 minutes or more.",
     "Correo": "Email",
     "Solo para recuperar tu contraseña.": "Only used to recover your password.",
     "Actividad": "Activity",
@@ -188,6 +196,9 @@ EN = {
     "Generar clave": "Generate key",
 }
 PLURALS = {
+    "%(n)s objeto": ["%(n)s item", "%(n)s items"],
+    "%(n)s sesión del mod": ["%(n)s mod session", "%(n)s mod sessions"],
+    "y %(n)s más": ["and %(n)s more", "and %(n)s more"],
     "en %(n)s sesión": ["in %(n)s session", "in %(n)s sessions"],
 }
 

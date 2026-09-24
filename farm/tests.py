@@ -224,3 +224,62 @@ class ModApiTest(Base):
         self.assertNotContains(self.client.get(reverse("farm:profile")), 'value="fl_')
         self.client.logout()
         self.assertEqual(self.post(self.payload).status_code, 401)
+
+
+class LootTest(ModApiTest):
+    loot = [
+        {"key": "a:Mega Dark (13) Gem Box", "name": "Mega Dark (13) Gem Box", "qty": 3},
+        {"key": "c:item/crafting/warpseed", "name": "Glim", "qty": 34},
+        {"key": "a:Crystalline Bow", "name": "Crystalline Bow", "qty": 2},
+        {"key": "", "name": "sin clave", "qty": 5},
+        {"key": "a:x", "name": "cero", "qty": 0},
+        "basura",
+    ]
+
+    def test_loot_saved_and_shown(self):
+        r = self.post({**self.payload, "loot": self.loot})
+        self.assertEqual(r.status_code, 201, r.content)
+        s = FarmSession.objects.get(user=self.user)
+        self.assertEqual(s.loot.count(), 3)
+        self.client.force_login(self.user)
+        page = self.client.get(reverse("farm:session_log", args=[s.pk]))
+        self.assertContains(page, "Cajas de gemas")
+        self.assertContains(page, "Mega Dark (13) Gem Box")
+        self.assertContains(self.client.get(reverse("farm:history")), "3 objetos")
+        st = self.client.get(reverse("farm:stats"))
+        self.assertContains(st, "Lo farmeado")
+        self.assertContains(st, "Glim")
+
+    def test_loot_can_arrive_later_but_not_twice(self):
+        self.post(self.payload)
+        self.post({**self.payload, "loot": self.loot})
+        self.post({**self.payload, "loot": [{"key": "a:y", "name": "y", "qty": 9}]})
+        s = FarmSession.objects.get(user=self.user)
+        self.assertEqual(sorted(s.loot.values_list("name", flat=True)),
+                         ["Crystalline Bow", "Glim", "Mega Dark (13) Gem Box"])
+
+
+class CompanionDiffTest(TestCase):
+    def test_diff_from_snapshots(self):
+        import sys
+        from pathlib import Path
+        sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "companion"))
+        import fluxlab_companion as fc
+        cfg = {
+            "snap_start": "100|1|2|1", "snap_start_0": "c~item/crafting/flux~Flux~50|c~m~Glim~10|a~Box~1",
+            "snap_end": "200|2|2|2", "snap_end_0": "c~item/crafting/flux~Flux~90|c~m~Gl",
+            "snap_end_1": "im~15|a~Box~4|a~Bow~1",
+        }
+        w = fc.Watcher.__new__(fc.Watcher)
+        w.end_seen_at = {}
+        loot = w.loot_for(cfg, "end|200|90|100|50")
+        self.assertEqual(loot, [
+            {"key": "c:m", "name": "Glim", "qty": 5},
+            {"key": "a:Box", "name": "Box", "qty": 3},
+            {"key": "a:Bow", "name": "Bow", "qty": 1},
+        ])
+        # la foto final todavia no esta: espera
+        self.assertIsNone(w.loot_for({k: v for k, v in cfg.items() if not k.startswith("snap_end")},
+                                     "end|200|90|100|50"))
+        # foto de otra sesion: manda sin objetos
+        self.assertEqual(w.loot_for(cfg, "end|300|90|250|50"), [])

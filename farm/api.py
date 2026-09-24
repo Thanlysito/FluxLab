@@ -4,7 +4,8 @@ POST /api/sesiones/
 Authorization: Token <clave del perfil>
 {"started_at": 1790213054, "ended_at": 1790213165, "flux_start": 493846544,
  "flux_end": 493846794, "activity": "delves" (opcional), "trove_class": "..." (opcional),
- "power_rank": 42000 (opcional)}
+ "power_rank": 42000 (opcional),
+ "loot": [{"key": "a:Mega Dark (13) Gem Box", "name": "Mega Dark (13) Gem Box", "qty": 3}] (opcional)}
 """
 import json
 from datetime import datetime, timedelta, timezone as dt_timezone
@@ -14,14 +15,34 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-from .models import CLASS_CHOICES, Activity, FarmSession, Profile
+from .models import CLASS_CHOICES, Activity, FarmSession, LootItem, Profile
 
 MAX_SESSION = timedelta(hours=24)
+MAX_LOOT_ITEMS = 400
 VALID_CLASSES = {c for c, _ in CLASS_CHOICES}
 
 
 def _error(msg, status=400):
     return JsonResponse({"error": msg}, status=status)
+
+
+def _clean_loot(raw):
+    """Lista de objetos ganados, limpia. Lo que venga raro se ignora."""
+    items = {}
+    if not isinstance(raw, list):
+        return items
+    for it in raw[:MAX_LOOT_ITEMS]:
+        if not isinstance(it, dict):
+            continue
+        try:
+            qty = int(it.get("qty"))
+        except (TypeError, ValueError):
+            continue
+        key = str(it.get("key") or "")[:160].strip()
+        name = str(it.get("name") or "")[:120].strip()
+        if key and name and 0 < qty <= 2_000_000_000:
+            items[key] = (name, qty)
+    return items
 
 
 def _user_from_request(request):
@@ -90,8 +111,16 @@ def sessions(request):
             "is_logged": True,
         },
     )
+    loot = _clean_loot(data.get("loot"))
+    # Una sesion que llego sin objetos (companion viejo, foto incompleta) los puede
+    # recibir despues; si ya los tiene no se tocan.
+    if loot and not session.loot.exists():
+        LootItem.objects.bulk_create(
+            [LootItem(session=session, key=k, name=n, quantity=q) for k, (n, q) in loot.items()]
+        )
     return JsonResponse({
         "id": session.pk,
+        "loot_items": session.loot.count(),
         "created": created,
         "flux": session.flux,
         "minutes": round(session.hours * 60, 1),

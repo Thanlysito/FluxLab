@@ -72,17 +72,69 @@ def load_config(force=False, interactive=True):
     return cfg
 
 
-def read_session_line():
-    """Devuelve el valor de 'session = ...' del archivo del mod, o None."""
+def read_mod_cfg():
+    """Todas las claves del archivo del mod ({} si no se puede leer)."""
+    data = {}
     try:
         with open(MOD_CFG, encoding="utf-8", errors="replace") as f:
             for line in f:
                 name, sep, value = line.partition("=")
-                if sep and name.strip().lower() == "session":
-                    return value.strip()
+                if sep:
+                    data[name.strip().lower()] = value.strip()
     except OSError:
+        pass
+    return data
+
+
+def read_session_line():
+    """Devuelve el valor de 'session = ...' del archivo del mod, o None."""
+    return read_mod_cfg().get("session")
+
+
+FLUX_ID = "item/crafting/flux"
+SNAP_WAIT = 20  # segundos que se espera la foto del inventario antes de mandar sin ella
+
+
+def read_snapshot(cfg, kind, ts):
+    """La foto 'start' o 'end' del inventario si es de este momento: {clave: (nombre, cantidad)}.
+    None si no esta (o es de otra sesion)."""
+    head = cfg.get(f"snap_{kind}", "").split("|")
+    if len(head) < 2 or head[0] != str(ts):
         return None
-    return None
+    try:
+        chunks = int(head[1])
+    except ValueError:
+        return None
+    parts = []
+    for i in range(chunks):
+        part = cfg.get(f"snap_{kind}_{i}")
+        if part is None:
+            return None
+        parts.append(part)
+    snap = {}
+    for entry in "".join(parts).split("|"):
+        f = entry.split("~")
+        try:
+            if f[0] == "c" and len(f) >= 4:
+                snap["c:" + f[1]] = (f[2] or f[1], int(f[3]))
+            elif f[0] == "a" and len(f) >= 3:
+                snap["a:" + f[1]] = (f[1], int(f[2]))
+        except ValueError:
+            continue
+    return snap
+
+
+def loot_gained(before, after):
+    """Lo que subio entre las dos fotos (sin el flux, que va aparte)."""
+    loot = []
+    for key, (name, qty) in after.items():
+        if key == "c:" + FLUX_ID:
+            continue
+        gained = qty - before.get(key, (name, 0))[1]
+        if gained > 0:
+            loot.append({"key": key, "name": name, "qty": gained})
+    loot.sort(key=lambda it: -it["qty"])
+    return loot
 
 
 def load_sent():
@@ -98,13 +150,16 @@ def mark_sent(value):
         f.write(value + "\n")
 
 
-def send(cfg, value):
+def send(cfg, value, loot=None):
     # end|fin|flux_fin|inicio|flux_inicio
     _, ended, flux_end, started, flux_start = value.split("|")[:5]
-    body = json.dumps({
+    payload = {
         "started_at": int(float(started)), "ended_at": int(float(ended)),
         "flux_start": int(float(flux_start)), "flux_end": int(float(flux_end)),
-    }).encode()
+    }
+    if loot:
+        payload["loot"] = loot
+    body = json.dumps(payload).encode()
     req = urllib.request.Request(
         cfg["url"] + "/api/sesiones/", data=body, method="POST",
         headers={"Content-Type": "application/json", "Authorization": "Token " + cfg["key"]},
@@ -123,14 +178,31 @@ class Watcher:
         self.sent = load_sent()
         self.last_seen = None
         self.retry_at = 0.0
+        self.end_seen_at = {}  # sesion terminada -> cuando la vimos (para esperar la foto)
 
     def _done(self, value):
         mark_sent(value)
         self.sent.add(value)
 
+    def loot_for(self, cfg, value):
+        """Lista de lo ganado, [] si no hubo fotos, o None si hay que esperar un poco mas."""
+        f = value.split("|")
+        if len(f) < 5:
+            return []
+        ended, started = f[1], f[3]
+        after = read_snapshot(cfg, "end", ended)
+        before = read_snapshot(cfg, "start", started)
+        if after is not None and before is not None:
+            return loot_gained(before, after)
+        first = self.end_seen_at.setdefault(value, time.time())
+        if before is not None and time.time() - first < SNAP_WAIT:
+            return None  # el mod todavia esta guardando la foto final
+        return []
+
     def step(self):
         """Una pasada. Devuelve True si queda una sesion terminada sin enviar."""
-        value = read_session_line()
+        cfg = read_mod_cfg()
+        value = cfg.get("session")
         if value and value != self.last_seen:
             if value.startswith("start|"):
                 log("Sesion en curso...")
@@ -139,12 +211,16 @@ class Watcher:
             return False
         if time.time() < self.retry_at:
             return True
+        loot = self.loot_for(cfg, value)
+        if loot is None:
+            return True
         try:
-            res = send(self.cfg, value)
+            res = send(self.cfg, value, loot)
             self._done(value)
             fph = res.get("flux_per_hour")
             log(f"Sesion enviada: +{res['flux']:,} flux en {res['minutes']} min"
-                + (f" ({fph:,} flux/h)" if fph else "") + f"  {res.get('url', '')}")
+                + (f" ({fph:,} flux/h)" if fph else "")
+                + (f", {len(loot)} objetos distintos" if loot else "") + f"  {res.get('url', '')}")
             return False
         except urllib.error.HTTPError as e:
             detail = e.read().decode(errors="replace")[:200]
